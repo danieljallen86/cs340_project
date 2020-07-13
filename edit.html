@@ -15,16 +15,16 @@
             <a href="index.html">
                 <img class="logo" src="IMG/logo.png" title="credit: redbubble.com" alt="logo">             
              </a>
-            <h1>Add a Customer</h1>
+            <h1 class="form_header">Add a Customer</h1>
         </header>
         <section>
-            <form>
+            <form class="master_form">
                 <div>
                     <label>Name</label>
                     <input type="name" name="name" required="">
                 </div>
                 <div>
-                    <label>Nation</label>
+                    <label>Nation <a class="silly_add" href="edit.html?nation_add">add a nation</a></label>
                     <select name="nation">
                         <option selected="true" value=null default> -- select a nation -- </option>
                         <option value="air">Air Nomad</option>
@@ -34,7 +34,7 @@
                     </select>
                 </div>
                 <div>
-                    <label>Bender?</label>
+                    <label>Bender? <a class="silly_add" href="edit.html?element_add">add an element</a></label>
                     <select name="bender">
                         <option value="none" default>No</option>
                         <option value="air">Air</option>

@@ -1,47 +1,82 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // LIST PAGES
-    if (document.title === 'List of Entities'){
+
+    if (document.title !== 'The Jasmine Dragon'){
         let pageName = window.location.search.slice(1)
         updateTitle(pageName);
-        updateHeader(pageName);   
-        populateTable(pageName);     
-    }
+        updateHeader(pageName);
 
+        if (pageName.includes('list')){
+            populateTable(pageName);
+        }
+        
+        if (pageName.includes('edit')){
+            updateForm(pageName);
+        }
+    }
 })
 
 function updateTitle(pageName){
-    if (pageName === 'customers') { document.title = 'Customers';
-    } 
-    else if (pageName === 'teas'){ document.title = 'Teas';
-    }
-    else if (pageName === 'orders'){ document.title = 'Orders'
-    }
+    if (pageName === 'customer_list') document.title = 'Customers';
+     
+    else if (pageName === 'tea_list') document.title = 'Teas';
+    
+    else if (pageName === 'order_list') document.title = 'Orders';
+    
+    else if (pageName === 'customer_add') document.title = 'Add a Customer';
+    
+    else if (pageName === 'tea_add') document.title = 'Add a Tea';
+
+    else if (pageName === 'order_add') document.title = 'Add an Order';
+
+    else if (pageName === 'customer_edit') document.title = 'Update a Customer Record';
+
+    else if (pageName === 'tea_edit') document.title = 'Update a Tea Record';
+    
+    else if (pageName === 'order_edit') document.title = 'Update an Order';
+    
+    else if (pageName === 'nation_add') document.title = 'Add a Nation'
+
+    else if (pageName === 'element_add') document.title = 'Add an Element'
 }
 
 function updateHeader(pageName){
-    let header = document.querySelector('.results_header')
+    var header = (pageName.includes('list')) ? 
+        document.querySelector('.results_header') : 
+        document.querySelector('.form_header');
 
-    if (pageName === 'customers') { header.textContent = 'Customers';
-    } 
-    else if (pageName === 'teas'){ header.textContent = 'Teas';
-    }
-    else if (pageName === 'orders'){ header.textContent = 'Orders';
-    }
+    if (pageName === 'customer_list')  header.textContent = 'Customers';
+
+    else if (pageName === 'tea_list') header.textContent = 'Teas';
+    
+    else if (pageName === 'order_list') header.textContent = 'Orders';
+    
+    else if (pageName === 'customer_add') header.textContent = 'Add a Customer';
+    
+    else if (pageName === 'tea_add') header.textContent = 'Add a Tea';
+    
+    else if (pageName === 'order_add') header.textContent = 'Add an Order';
+    
+    else if (pageName === 'customer_edit') header.textContent = 'Update a Customer Record';
+        
+    else if (pageName === 'tea_edit') header.textContent = 'Update a Tea Record';
+    
+    else if (pageName === 'order_edit') header.textContent = 'Update an Order';
+    
+    else if (pageName === 'nation_add') header.textContent = 'Add a Nation'
+
+    else if (pageName === 'element_add') header.textContent = 'Add an Element'
 }
-
 
 function populateTable(pageName){
     makeHeaders(pageName);
     fillData(pageName);
-
-    // query database (call separate func)
 }
 
 function makeHeaders(pageName){
     const tableHeaders = {
-        customers: ['Name', 'Nation', 'Bender', 'Element'],
-        teas: ['Name', 'Caffeinated'],
-        orders: ['Date', 'Customer', 'Tea']
+        customer_list: ['Name', 'Nation', 'Bender', 'Element'],
+        tea_list: ['Name', 'Caffeinated'],
+        order_list: ['Date', 'Customer', 'Tea']
     }
 
     //make header
@@ -61,18 +96,18 @@ function makeHeaders(pageName){
     document.querySelector('.resutls_table').appendChild(newRow);
 }
 
-function fillData(pageName){
+function fillData(pageName, data){
     const dummyData = {
-        customers: [{
+        customer_list: [{
             'Name': 'Ang',
             'Nation': 'Air Nomad', 
             'Bender': true,
             'Element': 'All (Avatar)'
         }], 
-        teas:[{
+        tea_list:[{
             'Name': 'Jasmine',
             'Caffeinated': 'true'}],
-        orders: [{
+        order_list: [{
             'Date': '2020-07-12',
             'Customer': 'Fire Lord Zuko',
             'Tea': 'Jasmine'
@@ -124,5 +159,19 @@ function editEntry(){
 }
 
 function delEntry(){
-    event.preventDefault()
+    event.preventDefault();
 }
+
+function updateForm(pageName){
+    // list fields
+
+    // update fields
+
+    // if edit 
+        // fill form
+        // change button name
+}
+
+function updateFields(pageName){}
+
+function populateFields(pageName){}
