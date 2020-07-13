@@ -116,7 +116,7 @@ button:hover {
 }
 
 .form_btn {
-    margin-top: 20px;
+    margin: 20px 0;
     background-color: #d6efc7;
     border: 1px solid #d6efc7;
     border-radius: 5px;
@@ -169,6 +169,9 @@ header h1 {
     margin: 20px 0;
 }
 
+header button {
+    margin: 20px 0;
+}
 
 /********************************************
 *               LANDING PAGE                *
