@@ -129,6 +129,31 @@ button:hover {
     color: #fff;
 }
 
+/********* TABLES *********/
+table {
+    background-color: #d6efc799;
+    border-radius: 5px;
+}
+
+th, td {border: 1px solid black;}
+
+table, th, td {
+    text-align: center;
+    padding: 3px;
+}
+
+th { font-weight: bolder; }
+
+#edit_entry, 
+#remove_entry { 
+    font-size: 25px;
+}
+
+#edit_entry:active, 
+#remove_entry:active { 
+    transform: translateY(2px); 
+}
+
 /********************************************
 *                  HEADER                   *
 ********************************************/
