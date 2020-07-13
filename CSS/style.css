@@ -218,6 +218,18 @@ header button {
     background-image: linear-gradient(#ffffff99,#ffffff99), url(iroh_hill.jpeg);
 }
 
+.resutls_table tr td form {
+    width: auto;
+    background: none;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.resutls_table tr td form button {
+    margin: 5%;
+}
+
 /********************************************
 *               EDIT PAGE                   *
 ********************************************/
