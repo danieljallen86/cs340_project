@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     if (document.title !== 'The Jasmine Dragon'){
-        let pageName = window.location.search.slice(1)
+        let pageName = window.location.search.slice(1);
         updateTitle(pageName);
         updateHeader(pageName);
 
@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateForm(pageName);
+            updateBackButton(pageName);
         }
-    }
+    } 
 })
 
 function updateTitle(pageName){
@@ -49,6 +50,11 @@ function updateHeader(pageName){
     else if (pageName === 'element_add') header.textContent = 'Add an Element'
     else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record'
     else if (pageName === 'element_edit') header.textContent = 'Update an Element'
+}
+
+function updateBackButton(pageName){
+    let backBtn = document.querySelector('.back_btn');
+    backBtn.href = `list.html?${pageName.split('_').slice(0,1)}_list`
 }
 
 function populateTable(pageName){
@@ -155,7 +161,9 @@ function updateForm(pageName){
 
         nation: '<div><label for="nation">Nation</label><input type="text" name="name" id= "nation" required></div><div><label for="captial">Capital</label><input type="text" name="capital" id="captial"></div><div><label for="ruler">Ruler</label><input type="text" name="ruler" id="ruler"></div><div><label for="element">National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label><select name="element" id="element"><option value="none" default>None</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option></select></div><input class="form_btn" type="submit" name="add_nation" value="Add Nation">',
 
-        element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">'
+        element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
+
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea</label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><input class="form_btn" type="submit" name="add_order" value="Add Order">'
     };
 
     // update update form
@@ -171,12 +179,11 @@ function updateForm(pageName){
 
         // change button name & value
         document.querySelector('.form_btn').value = 
-            'Edit ' +document.querySelector('.form_btn').value.split(' ').slice(1)
+            'Update ' +document.querySelector('.form_btn').value.split(' ').slice(1)
 
         document.querySelector('.form_btn').name = 
-            'edit_' + document.querySelector('.form_btn').name.split('_').slice(1)        
+            'update_' + document.querySelector('.form_btn').name.split('_').slice(1)        
     }
-
 }
 
 function updateFields(pageName){}

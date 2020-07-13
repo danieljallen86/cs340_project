@@ -303,6 +303,5 @@ form div select {
 .tea_selection div label{ 
     width: 300px;
     display: flex;
-    justify-content: space-around;
-    margin-left: 125px;
+    margin-left: auto;
 }
