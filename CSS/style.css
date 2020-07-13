@@ -252,6 +252,7 @@ form div label {
 
 form div input,
 form div select {
+    text-align: center;
     margin-left: auto;
 }
 
