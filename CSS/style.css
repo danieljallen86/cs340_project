@@ -148,11 +148,18 @@ th { font-weight: bolder; }
 
 table td form {padding: 0;}
 
+ion-icon {
+    z-index: -1;
+}
+
+#view_entry,
 #edit_entry, 
 #remove_entry { 
+    z-index: 1;
     font-size: 25px;
 }
 
+#view_entry:active,
 #edit_entry:active, 
 #remove_entry:active { 
     transform: translateY(2px); 

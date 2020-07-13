@@ -1,3 +1,20 @@
+const dummyData = {
+    customer_list: [{
+        'name': 'Ang',
+        'nation': 'Air Nomad', 
+        'bender': true,
+        'element': 'All (Avatar)'
+    }], 
+    tea_list:[{
+        'name': 'Jasmine',
+        'caffeinated': 'true'}],
+    order_list: [{
+        'date': '2020-07-12',
+        'customer': 'Fire Lord Zuko',
+        'tea': 'Jasmine'
+    }]
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
     if (document.title !== 'The Jasmine Dragon'){
@@ -30,6 +47,7 @@ function updateTitle(pageName){
     else if (pageName === 'element_add') document.title = 'Add an Element'
     else if (pageName === 'nation_edit') document.title = 'Update a Nation Record';
     else if (pageName === 'element_edit') document.title = 'Update an Element';
+    else if (pageName === 'status_add') document.title = 'Add An Order Status';
 }
 
 function updateHeader(pageName){
@@ -46,20 +64,25 @@ function updateHeader(pageName){
     else if (pageName === 'customer_edit') header.textContent = 'Update a Customer Record'; 
     else if (pageName === 'tea_edit') header.textContent = 'Update a Tea Record';
     else if (pageName === 'order_edit') header.textContent = 'Update an Order';  
-    else if (pageName === 'nation_add') header.textContent = 'Add a Nation'
-    else if (pageName === 'element_add') header.textContent = 'Add an Element'
-    else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record'
-    else if (pageName === 'element_edit') header.textContent = 'Update an Element'
+    else if (pageName === 'nation_add') header.textContent = 'Add a Nation';
+    else if (pageName === 'element_add') header.textContent = 'Add an Element';
+    else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record';
+    else if (pageName === 'element_edit') header.textContent = 'Update an Element';
+    else if (pageName === 'status_add') header.textContent = 'Add An Order Status';
 }
 
 function updateBackButton(pageName){
     let backBtn = document.querySelector('.back_btn');
-    backBtn.href = `list.html?${pageName.split('_').slice(0,1)}_list`
+    if (pageName.includes('status') || String(window.location).includes('detail')){
+        backBtn.href = 'javascript:history.back()'
+    } else {
+        backBtn.href = `list.html?${pageName.split('_').slice(0,1)}_list`
+    }
 }
 
 function populateTable(pageName){
     makeHeaders(pageName);
-    fillData(pageName);
+    fillData(pageName, dummyData[pageName]);
 }
 
 function makeHeaders(pageName){
@@ -79,7 +102,7 @@ function makeHeaders(pageName){
     }
 
     let newCell = document.createElement('th')
-    newCell.textContent = 'Edit/Delete';
+    newCell.textContent = 'View / Edit / Delete';
     newRow.appendChild(newCell)
 
 
@@ -87,40 +110,24 @@ function makeHeaders(pageName){
 }
 
 function fillData(pageName, data){
-    const dummyData = {
-        customer_list: [{
-            'Name': 'Ang',
-            'Nation': 'Air Nomad', 
-            'Bender': true,
-            'Element': 'All (Avatar)'
-        }], 
-        tea_list:[{
-            'Name': 'Jasmine',
-            'Caffeinated': 'true'}],
-        order_list: [{
-            'Date': '2020-07-12',
-            'Customer': 'Fire Lord Zuko',
-            'Tea': 'Jasmine'
-        }]
-    }
-
-    for(let i = 0; i < dummyData[pageName].length; ++i){
+    for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
         
-        let dataKeys = Object.keys(dummyData[pageName][0]);
+        let dataKeys = Object.keys(data[0]);
         for (let j = 0; j < dataKeys.length; ++j) {
             let newCell = document.createElement('td');
-            newCell.textContent = dummyData[pageName][i][dataKeys[j]];
+            newCell.textContent = data[i][dataKeys[j]];
             newRow.appendChild(newCell)
         }
-        newRow.appendChild(addFormBtns(newRow));
+        newRow.appendChild(addFormBtns(newRow, data));
 
         document.querySelector('.resutls_table').appendChild(newRow);
     }
 }
 
-function addFormBtns(newRow){
-    tableBtns = [['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
+function addFormBtns(newRow, data){
+    tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
+                ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
                 ['remove_entry','<ion-icon name="trash-outline"></ion-icon>',delEntry]];
             
     //add edit and remove buttons
@@ -131,7 +138,7 @@ function addFormBtns(newRow){
     for(let button of tableBtns){
         let cellBtn = document.createElement('button')
         cellBtn.type = 'submit';
-        // cellBtn.value = data.id;
+        cellBtn.value = data[0]['name'] || data[0]['date'];
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
@@ -144,8 +151,17 @@ function addFormBtns(newRow){
     return newCell;
 }
 
+function viewEntry(){
+    let id = event.srcElement.value;
+    // console.log(id)
+    window.location.href=`detail.html?${id}`
+    event.preventDefault();
+}
+
 function editEntry(){
-    event.preventDefault()
+    entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+    window.location.href=`edit.html?${entity}_edit`;
+    event.preventDefault();
 }
 
 function delEntry(){
@@ -163,7 +179,9 @@ function updateForm(pageName){
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea</label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><input class="form_btn" type="submit" name="add_order" value="Add Order">'
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea</label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><div><label for="order_status">Order Status<br><a class="silly_add" href="edit.html?status_add">Add a status</a></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+
+        status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
 
     // update update form
@@ -175,7 +193,7 @@ function updateForm(pageName){
     if (pageName.includes('edit')) {
         // fill form
             // query database 
-            // populate fields
+            populateFields();
 
         // change button name & value
         document.querySelector('.form_btn').value = 
@@ -185,7 +203,5 @@ function updateForm(pageName){
             'update_' + document.querySelector('.form_btn').name.split('_').slice(1)        
     }
 }
-
-function updateFields(pageName){}
 
 function populateFields(pageName){}
