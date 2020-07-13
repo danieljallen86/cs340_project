@@ -34,12 +34,7 @@ section {
 
 }
 
-.header_logo {
-    height: 150px;
-    margin: 10px;
-}
-
-.page_logo {
+.logo {
     height: 100px;
     float: left;
     margin: 10px;
