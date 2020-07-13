@@ -131,10 +131,14 @@ th,
 td {
     background-color: #d6efc799;
     border-radius: 5px;
-    padding: 10px;
 }
 
-th, td {border: 1px solid #184d47;}
+table {padding: 10px;}
+
+th, td {
+    border: 1px solid #184d47;
+    padding: 3px 20px;
+}
 
 table, th, td {
     text-align: center;
@@ -217,16 +221,21 @@ header button {
     background-image: linear-gradient(#ffffff99,#ffffff99), url(iroh_hill.jpeg);
 }
 
+.resutls_table tr td:last-child {
+    padding: 3px 10px;
+}
+
 .resutls_table tr td form {
     width: auto;
     background: none;
     display: flex;
     align-items: center;
     flex-direction: row;
+    padding: ;
 }
 
 .resutls_table tr td form button {
-    margin: 0 10px;
+    margin: auto;
 }
 
 /********************************************
