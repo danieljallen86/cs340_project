@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8"><style data-styles="">ion-icon{visibility:hidden}.hydrated{visibility:inherit}</style>
         <title>Customers</title>
         <link rel="stylesheet" href="CSS/style.css" type="text/css">
+        <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule="" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js"></script>   
     </head>
     <body class="query_list">
         <header>    
-            <a href="index.html">
-                <img class="page_logo" src="IMG/logo.png">
-             </a>
-             <button>
+            <button>
                 Back
-            </button>
-            <h1>ALL THE THINGS</h1>
+            </button>            
+            <a href="index.html">
+                <img class="page_logo" src="IMG/logo.png" title="credit: redbubble.com" alt="logo">             
+            </a>
+            <h1 class="results_header">Customers</h1>
         </header>
-        <section>
+        <section class="results_section">
+            <table class="resutls_table">
+                <thead>
+                    <tr><th>Name</th>
+                    <th>Nation</th>
+                    <th>Bender</th>
+                    <th>Element</th>
+                    <th>Edit/Delete</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>Ang</td>
+                    <td>Air Nomad</td>
+                    <td>Yes</td>
+                    <td>All (Avatar)</td>
+                    <td>
+                        <button><ion-icon id="edit_entry" name="pencil-outline" role="img" class="md hydrated" aria-label="pencil outline"></ion-icon></button>
+                        <button><ion-icon id="remove_entry" name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon></button>
+                    </td>
+                </tr></tbody>
+            </table>
         </section>
-        <p>Here is some text</p>
         <script src="JS/script.js"></script>
     </body>
 <html>
