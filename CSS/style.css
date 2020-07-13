@@ -116,6 +116,7 @@ button:hover {
 }
 
 .form_btn {
+    margin-top: 20px;
     background-color: #d6efc7;
     border: 1px solid #d6efc7;
     border-radius: 5px;
@@ -220,4 +221,37 @@ header h1 {
 
 .edit {
     background-image: linear-gradient(#ffffff99,#ffffff99), url(edit.png)
+}
+
+form {
+    width: 50vw;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #d6efc799;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form div{
+    margin: 10px 0;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    padding: 0 5%;
+}
+
+form div label {
+    width: 40%;
+    text-align: left;
+}
+
+form div input,
+form div select {
+    margin-left: auto;
+}
+
+form div select {
+    width: 300px;
 }
