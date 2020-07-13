@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             populateTable(pageName);
         }
         
-        if (pageName.includes('edit')){
+        else if (pageName.includes('edit') || pageName.includes('add')){
             updateForm(pageName);
         }
     }
@@ -17,26 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function updateTitle(pageName){
     if (pageName === 'customer_list') document.title = 'Customers';
-     
     else if (pageName === 'tea_list') document.title = 'Teas';
-    
     else if (pageName === 'order_list') document.title = 'Orders';
-    
     else if (pageName === 'customer_add') document.title = 'Add a Customer';
-    
     else if (pageName === 'tea_add') document.title = 'Add a Tea';
-
     else if (pageName === 'order_add') document.title = 'Add an Order';
-
     else if (pageName === 'customer_edit') document.title = 'Update a Customer Record';
-
     else if (pageName === 'tea_edit') document.title = 'Update a Tea Record';
-    
-    else if (pageName === 'order_edit') document.title = 'Update an Order';
-    
+    else if (pageName === 'order_edit') document.title = 'Update an Order';  
     else if (pageName === 'nation_add') document.title = 'Add a Nation'
-
     else if (pageName === 'element_add') document.title = 'Add an Element'
+    else if (pageName === 'nation_edit') document.title = 'Update a Nation Record';
+    else if (pageName === 'element_edit') document.title = 'Update an Element';
 }
 
 function updateHeader(pageName){
@@ -45,26 +37,18 @@ function updateHeader(pageName){
         document.querySelector('.form_header');
 
     if (pageName === 'customer_list')  header.textContent = 'Customers';
-
     else if (pageName === 'tea_list') header.textContent = 'Teas';
-    
     else if (pageName === 'order_list') header.textContent = 'Orders';
-    
     else if (pageName === 'customer_add') header.textContent = 'Add a Customer';
-    
     else if (pageName === 'tea_add') header.textContent = 'Add a Tea';
-    
     else if (pageName === 'order_add') header.textContent = 'Add an Order';
-    
-    else if (pageName === 'customer_edit') header.textContent = 'Update a Customer Record';
-        
+    else if (pageName === 'customer_edit') header.textContent = 'Update a Customer Record'; 
     else if (pageName === 'tea_edit') header.textContent = 'Update a Tea Record';
-    
-    else if (pageName === 'order_edit') header.textContent = 'Update an Order';
-    
+    else if (pageName === 'order_edit') header.textContent = 'Update an Order';  
     else if (pageName === 'nation_add') header.textContent = 'Add a Nation'
-
     else if (pageName === 'element_add') header.textContent = 'Add an Element'
+    else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record'
+    else if (pageName === 'element_edit') header.textContent = 'Update an Element'
 }
 
 function populateTable(pageName){
@@ -163,13 +147,36 @@ function delEntry(){
 }
 
 function updateForm(pageName){
-    // list fields
+    // object of innerHTML
+    const pageForms = {
+        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option><option value="air">Air Nomad</option><option value="earth">Earth Kingdom</option><option value="fire">Fire Nation</option><option value="water">Water Tribe</option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option><option value="avatar">All (Avatar)</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
 
-    // update fields
+        tea: '<div><label for="tea_name">Tea Name</label><input type="text" name="name" id="tea_name" required></div><div><label for="caff">Caffeinated?</label><div><input type="radio" name="caff" id="caff" value="true">True<input type="radio" name="caff" ="true">False</div></div><input class="form_btn" type="submit" name="add_tea" value="Add Tea">',
 
-    // if edit 
+        nation: '<div><label for="nation">Nation</label><input type="text" name="name" id= "nation" required></div><div><label for="captial">Capital</label><input type="text" name="capital" id="captial"></div><div><label for="ruler">Ruler</label><input type="text" name="ruler" id="ruler"></div><div><label for="element">National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label><select name="element" id="element"><option value="none" default>None</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option></select></div><input class="form_btn" type="submit" name="add_nation" value="Add Nation">',
+
+        element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">'
+    };
+
+    // update update form
+    let formChoice = window.location.search.slice(1).split('_')[0];
+    let pageForm = document.querySelector('.master_form');
+
+    pageForm.innerHTML = pageForms[formChoice];
+
+    if (pageName.includes('edit')) {
         // fill form
-        // change button name
+            // query database 
+            // populate fields
+
+        // change button name & value
+        document.querySelector('.form_btn').value = 
+            'Edit ' +document.querySelector('.form_btn').value.split(' ').slice(1)
+
+        document.querySelector('.form_btn').name = 
+            'edit_' + document.querySelector('.form_btn').name.split('_').slice(1)        
+    }
+
 }
 
 function updateFields(pageName){}

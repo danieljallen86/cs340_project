@@ -285,3 +285,24 @@ form div select {
     font-style: italic;
     font-weight: 100;
 }
+
+.date {
+    width: 285px;
+    height: 35px;
+}
+
+.tea_selection {align-items: flex-start;}
+
+.tea_selection div {
+    flex-direction: column;
+    align-items: initial;
+    padding: 0;
+    margin: 0;
+}
+
+.tea_selection div label{ 
+    width: 300px;
+    display: flex;
+    justify-content: space-around;
+    margin-left: 125px;
+}

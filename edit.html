@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
     <meta charset="UTF-8">
-        <title>Edit</title>
+        <title>Add/Edit</title>
         <link rel="stylesheet" href="CSS/style.css" type="text/css">
         <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
         <script nomodule="" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js"></script>
@@ -15,11 +15,11 @@
             <a href="index.html">
                 <img class="logo" src="IMG/logo.png" title="credit: redbubble.com" alt="logo">             
              </a>
-            <h1 class="form_header">Add a Customer</h1>
+            <h1 class="form_header">Add/Edit</h1>
         </header>
         <section>
             <form class="master_form">
-                <div>
+                <!-- <div>
                     <label>Name</label>
                     <input type="name" name="name" required="">
                 </div>
@@ -44,7 +44,71 @@
                         <option value="avatar">All (Avatar)</option>
                     </select>                
                 </div>
-                <input class="form_btn" type="submit" name="Add Customer" value="Add Customer">
+                <input class="form_btn" type="submit" name="Add Customer" value="Add Customer"> -->
+
+                <!-- <div>
+                    <label>Tea Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label>Caffeinated?</label>
+                    <div>
+                        <input type="radio" name="caff" value="true">True
+                        <input type="radio" name="caff" value="true">False                           
+                    </div>
+                </div>
+                <input class="form_btn" type="submit" name="add_tea" value="Add Tea"> -->
+
+                <!-- <div>
+                    <label>Nation</label>
+                    <input type="text" name="name" required>
+                </div> 
+                <div>
+                    <label>Capital</label>
+                    <input type="text" name="capital">
+                </div>
+                <div>
+                    <label>Ruler</label>
+                    <input type="text" name="ruler">
+                </div>
+                <div>
+                    <label>National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label> 
+                    <select name="bender">
+                        <option value="none" default>None</option>
+                        <option value="air">Air</option>
+                        <option value="earth">Earth</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                    </select>  
+                </div>
+                <input class="form_btn" type="submit" name="add_nation" value="Add Nation"> -->
+
+                <!-- <div>
+                    <label>Element</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label>Original Bender</label>
+                    <input type="text" name="original_bender">
+                </div>
+                <input class="form_btn" type="submit" name="add_element" value="Add Element"> -->
+
+                <div>
+                    <label for="date">Order Date</label>
+                    <input class="date" type="date" name="date" id="date" required>
+                </div>
+                <div>
+                    <label for="customer">Customer</label>
+                    <input type="text" name="customer" id="customer" required>
+                </div>
+                <div class="tea_selection">
+                    <label>Tea</label>
+                    <div>
+                        <label>Green <input type="checkbox" name="green"></label>
+                        <label>Black <input type="checkbox" name="black"></label>
+                        <label>Herbal <input type="checkbox" name="herbal"></label>
+                    </div>
+                </div>
             </form>
         </section>
         <script src="JS/script.js"></script>
