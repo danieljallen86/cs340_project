@@ -18,7 +18,7 @@ const dummyData = {
 document.addEventListener('DOMContentLoaded', function() {
 
     if (document.title !== 'The Jasmine Dragon'){
-        let pageName = window.location.search.slice(1);
+        let pageName = window.location.search.slice(1).split('?')[0];
         updateTitle(pageName);
         updateHeader(pageName);
 
@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateForm(pageName);
             updateBackButton(pageName);
+        }
+
+        else if (String(window.location).includes('detail')){
+            updateDetailPageBtns();
         }
     } 
 })
@@ -73,11 +77,21 @@ function updateHeader(pageName){
 
 function updateBackButton(pageName){
     let backBtn = document.querySelector('.back_btn');
-    if (pageName.includes('status') || String(window.location).includes('detail')){
+    if (pageName.includes('status') || pageName.includes('nation') || pageName.includes('element')){
         backBtn.href = 'javascript:history.back()'
     } else {
         backBtn.href = `list.html?${pageName.split('_').slice(0,1)}_list`
     }
+}
+
+function updateDetailPageBtns(){
+    let editBtn = document.querySelector('.edit_btn');
+    let delBtn = document.querySelector('.del_btn');
+    let entity = window.location.search.split('&')[0];
+    let id = window.location.search.split('&')[1];
+
+    editBtn.href = `edit.html${entity}_edit?${id}`;
+    delBtn.addEventListener('click', delEntry);
 }
 
 function populateTable(pageName){
@@ -153,14 +167,15 @@ function addFormBtns(newRow, data){
 
 function viewEntry(){
     let id = event.srcElement.value;
-    // console.log(id)
-    window.location.href=`detail.html?${id}`
+    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+    window.location.href=`detail.html?${entity}&${id}`
     event.preventDefault();
 }
 
 function editEntry(){
-    entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
-    window.location.href=`edit.html?${entity}_edit`;
+    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+    let id = event.srcElement.value
+    window.location.href=`edit.html?${entity}_edit?${id}`;
     event.preventDefault();
 }
 
