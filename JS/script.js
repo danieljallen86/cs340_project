@@ -1,38 +1,49 @@
 const dummyData = {
-    customer_list: [{
+    customer: [{
         'name': 'Ang',
         'nation': 'Air Nomad', 
         'bender': true,
         'element': 'All (Avatar)'
     }], 
-    tea_list:[{
+    tea:[{
         'name': 'Jasmine',
         'caffeinated': 'true'}],
-    order_list: [{
+    order: [{
+        'order_id': 1846,
         'date': '2020-07-12',
         'customer': 'Fire Lord Zuko',
         'tea': 'Jasmine'
     }]
 }
 
+const tableHeaders = {
+    customer: ['Name', 'Nation', 'Bender', 'Element'],
+    tea: ['Name', 'Caffeinated'],
+    order: ['Order Number', 'Date', 'Customer', 'Tea']
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
     if (document.title !== 'The Jasmine Dragon'){
         let pageName = window.location.search.slice(1).split('?')[0];
-        updateTitle(pageName);
-        updateHeader(pageName);
 
         if (pageName.includes('list')){
+            updateTitle(pageName);
+            updateHeader(pageName);
             populateTable(pageName);
-        }
-        
+        } 
         else if (pageName.includes('edit') || pageName.includes('add')){
+            updateTitle(pageName);
+            updateHeader(pageName);
             updateForm(pageName);
             updateBackButton(pageName);
         }
-
         else if (String(window.location).includes('detail')){
-            updateDetailPageBtns();
+            let entity = window.location.search.slice(1).split('&')[0];
+            let id = window.location.search.split('&')[1];
+        
+            updateDetailPageBtns(entity, id);
+            displayDetails(entity, id);
         }
     } 
 })
@@ -84,32 +95,92 @@ function updateBackButton(pageName){
     }
 }
 
-function updateDetailPageBtns(){
+function updateDetailPageBtns(entity, id){
     let editBtn = document.querySelector('.edit_btn');
     let delBtn = document.querySelector('.del_btn');
-    let entity = window.location.search.split('&')[0];
-    let id = window.location.search.split('&')[1];
 
-    editBtn.href = `edit.html${entity}_edit?${id}`;
+    editBtn.href = `edit.html?${entity}_edit?${id}`;
     delBtn.addEventListener('click', delEntry);
+}
+
+function displayDetails(entity, id){
+    // query database with id
+    document.title = id;
+    let data = dummyData[entity][0]
+    console.log(data)
+    if (entity === 'customer') customerDeets(data);
+    else if (entity === 'tea') teaDeets(data);
+    else if (entity === 'order') orderDeets(data);
+}
+
+function customerDeets(data) {
+    document.querySelector('.entity_name').textContent = data.name
+    for (let attribute of ['Nation', 'Bender', 'Element']) {
+        let newDiv = document.createElement('div');
+        let newLabel = document.createElement('h3');
+        let newData = document.createElement('span');
+
+        newLabel.textContent = attribute;
+        newDiv.appendChild(newLabel)
+
+        if (attribute === 'Nation') newData.textContent = data.nation;
+        else if (attribute === 'Bender') newData.textContent = data.bender;
+        else newData.textContent = data.element
+
+        newDiv.appendChild(newData)
+        document.querySelector('.attributes').appendChild(newDiv)
+    }
+}
+
+function teaDeets(data){
+    document.querySelector('.entity_name').textContent = data.name
+    for (let attribute of ['Tea Name', 'Caffeinated']) {
+        let newDiv = document.createElement('div');
+        let newLabel = document.createElement('h3');
+        let newData = document.createElement('span');
+
+        newLabel.textContent = attribute;
+        newDiv.appendChild(newLabel)
+
+        if (attribute === 'Tea Name') newData.textContent = data.name;
+        else if (attribute === 'Caffeinated') newData.textContent = data.caffeinated;
+
+        newDiv.appendChild(newData)
+        document.querySelector('.attributes').appendChild(newDiv)
+    }
+}
+
+function orderDeets(data){
+    document.querySelector('.entity_name').textContent = `Order No. ${data.order_id}`;
+
+    for (let attribute of ['Date', 'Customer', 'Tea']) {
+        let newDiv = document.createElement('div');
+        let newLabel = document.createElement('h3');
+        let newData = document.createElement('span');
+
+        newLabel.textContent = attribute;
+        newDiv.appendChild(newLabel)
+
+        if (attribute === 'Date') newData.textContent = data.date.split('-').reverse().join('-');
+        else if (attribute === 'Customer') newData.textContent = data.customer;
+        else newData.textContent = data.tea
+
+        newDiv.appendChild(newData)
+        document.querySelector('.attributes').appendChild(newDiv)
+    }
 }
 
 function populateTable(pageName){
     makeHeaders(pageName);
-    fillData(pageName, dummyData[pageName]);
+    fillData(pageName, dummyData[pageName.split('_')[0]]);
 }
 
 function makeHeaders(pageName){
-    const tableHeaders = {
-        customer_list: ['Name', 'Nation', 'Bender', 'Element'],
-        tea_list: ['Name', 'Caffeinated'],
-        order_list: ['Date', 'Customer', 'Tea']
-    }
 
     //make header
     let newRow = document.createElement('tr');
 
-    for (let header of tableHeaders[pageName]){
+    for (let header of tableHeaders[pageName.split('_')[0]]){
         let newCell = document.createElement('th');
         newCell.textContent = header;
         newRow.appendChild(newCell)
@@ -143,7 +214,7 @@ function addFormBtns(newRow, data){
     tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
                 ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
                 ['remove_entry','<ion-icon name="trash-outline"></ion-icon>',delEntry]];
-            
+    console.log(data)           
     //add edit and remove buttons
     let newCell = document.createElement('td');
     let cellForm = document.createElement('form');
@@ -152,7 +223,7 @@ function addFormBtns(newRow, data){
     for(let button of tableBtns){
         let cellBtn = document.createElement('button')
         cellBtn.type = 'submit';
-        cellBtn.value = data[0]['name'] || data[0]['date'];
+        cellBtn.value = data[0]['name'] || data[0]['order_id'];
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
