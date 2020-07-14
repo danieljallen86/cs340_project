@@ -252,6 +252,9 @@ header button {
 }
 
 .attributes {
+    background-color: #d6efc799;
+    padding: 0 20px;
+    border-radius: 5px;
     display: flex;
     flex-direction: column;
 }
@@ -260,7 +263,7 @@ header button {
     width: 40vw;
     display: flex;
     align-items: center;
-    margin: 5px 0;
+    margin: 15px 0;
 }
 
 .attributes div h3 {
