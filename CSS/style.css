@@ -166,6 +166,12 @@ ion-icon {
     transform: translateY(2px); 
 }
 
+#view_entry:hover ion-icon,
+#edit_entry:hover ion-icon, 
+#remove_entry:hover ion-icon { 
+    color:#fff; 
+}
+
 /********************************************
 *                  HEADER                   *
 ********************************************/
