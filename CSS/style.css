@@ -242,8 +242,12 @@ header button {
 
 .search_bar h3 { 
     display: inline-block;
-    margin-right: 30px;
+    margin-right: 20px;
     margin-bottom: 0;
+}
+
+#list_search {
+    margin-right: 20px;
 }
 
 .resutls_table tr td form button {
