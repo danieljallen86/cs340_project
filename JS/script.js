@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateHeader(pageName);
             populateTable(pageName);
             changeAddBtn(pageName);
+            if (pageName.includes('tea')) {
+                document.getElementById('search_bar').style.display = 'none'
+            }
         } 
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateTitle(pageName);

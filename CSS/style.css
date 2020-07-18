@@ -234,6 +234,18 @@ header button {
     padding: ;
 }
 
+.search_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search_bar h3 { 
+    display: inline-block;
+    margin-right: 30px;
+    margin-bottom: 0;
+}
+
 .resutls_table tr td form button {
     margin: auto;
 }
