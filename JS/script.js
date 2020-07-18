@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTitle(pageName);
             updateHeader(pageName);
             populateTable(pageName);
+            changeAddBtn(pageName);
         } 
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateTitle(pageName);
@@ -107,7 +108,7 @@ function displayDetails(entity, id){
     // query database with id
     document.title = (entity === 'order')? `Order No. ${id}`: id;
     let data = dummyData[entity][0]
-    console.log(data)
+    // console.log(data)
     if (entity === 'customer') customerDeets(data);
     else if (entity === 'tea') teaDeets(data);
     else if (entity === 'order') orderDeets(data);
@@ -131,16 +132,33 @@ function customerDeets(data) {
         document.querySelector('.attributes').appendChild(newDiv)
     }
 
-    let orderTable = createCustOrderTable(id);
-    // append to attributes 
+    addNewOrderBtn(data.name);
+
+    // let orderTable = createCustOrderTable(id);
+    // append to cust_orders 
     
 }
 
 function createCustOrderTable(id){
     // query databse for orders
+    // if null, "No Orders at this time"
+    // Else
     // create div element
     // fill table with values like in the Deets
     // return div element
+}
+
+function addNewOrderBtn(name){
+    let orderSection = document.querySelector('.cust_orders');
+    let orderBtn = document.createElement('a');
+    orderBtn.className = 'add_btn'
+    orderBtn.href = `edit.html?order_add?${name}`
+    let btn = document.createElement('button');
+    btn.textContent = 'Add New Order';
+    orderBtn.appendChild(btn);
+
+    orderSection.parentNode.insertBefore(orderBtn, orderSection.nextSibling)
+
 }
 
 function teaDeets(data){
@@ -179,6 +197,14 @@ function orderDeets(data){
         newDiv.appendChild(newData)
         document.querySelector('.attributes').appendChild(newDiv)
     }
+}
+
+function changeAddBtn(pageName){
+    //select the add button
+    let addBtn = document.querySelector('.add_btn');
+    addBtn.lastElementChild.textContent = (pageName.includes('customer')) ? 'Add New Customer' : (pageName.includes('tea')) ? 'Add New Tea' : 'Add New Order';
+
+    addBtn.href = `edit.html?${(pageName.includes('customer')) ? 'customer_add' : (pageName.includes('tea')) ? 'tea_add' : 'order_add'}`;
 }
 
 function populateTable(pageName){
@@ -225,7 +251,7 @@ function addFormBtns(newRow, data){
     tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
                 ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
                 ['remove_entry','<ion-icon name="trash-outline"></ion-icon>',delEntry]];
-    console.log(data)           
+    //console.log(data)           
     //add edit and remove buttons
     let newCell = document.createElement('td');
     let cellForm = document.createElement('form');
@@ -298,6 +324,13 @@ function updateForm(pageName){
 
         document.querySelector('.form_btn').name = 
             'update_' + document.querySelector('.form_btn').name.split('_').slice(1)        
+    }
+
+    // if adding a new order from the customer details page
+    if (pageName === 'order_add' && window.location.search.slice(1).split('?')[1]) {
+        let custField = document.getElementById('customer');
+        // put customer name in customer field
+        custField.value = window.location.search.slice(1).split('?')[1];
     }
 }
 
