@@ -134,6 +134,7 @@ function customerDeets(data) {
 
     addNewOrderBtn(data.name);
 
+    // ADD CUSTOMER ORDERS TABLE
     // let orderTable = createCustOrderTable(id);
     // append to cust_orders 
     
