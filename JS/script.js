@@ -105,7 +105,7 @@ function updateDetailPageBtns(entity, id){
 
 function displayDetails(entity, id){
     // query database with id
-    document.title = id;
+    document.title = (entity === 'order')? `Order No. ${id}`: id;
     let data = dummyData[entity][0]
     console.log(data)
     if (entity === 'customer') customerDeets(data);
@@ -130,6 +130,17 @@ function customerDeets(data) {
         newDiv.appendChild(newData)
         document.querySelector('.attributes').appendChild(newDiv)
     }
+
+    let orderTable = createCustOrderTable(id);
+    // append to attributes 
+    
+}
+
+function createCustOrderTable(id){
+    // query databse for orders
+    // create div element
+    // fill table with values like in the Deets
+    // return div element
 }
 
 function teaDeets(data){
@@ -151,7 +162,7 @@ function teaDeets(data){
 }
 
 function orderDeets(data){
-    document.querySelector('.entity_name').textContent = `Order No. ${data.order_id}`;
+    document.querySelector('.entity_name').textContent = `Order Number ${data.order_id}`;
 
     for (let attribute of ['Date', 'Customer', 'Tea']) {
         let newDiv = document.createElement('div');

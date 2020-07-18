@@ -251,12 +251,19 @@ header button {
     background-image: linear-gradient(#ffffff99,#ffffff99), url(iroh_hill.jpeg);
 }
 
-.attributes {
+.attributes, 
+.cust_orders {
     background-color: #d6efc799;
     padding: 0 20px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.cust_orders div { 
+    width: 40vw;    
+    margin: 15px 0;
 }
 
 .attributes div {
@@ -266,12 +273,15 @@ header button {
     margin: 15px 0;
 }
 
-.attributes div h3 {
+.attributes div h3,
+.cust_orders div h3 {
     font-weight: bolder;
     margin-bottom: 0;
     margin-right: auto;
     display: inline-block;
 }
+
+
 
 /********************************************
 *               EDIT PAGE                   *
