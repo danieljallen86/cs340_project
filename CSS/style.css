@@ -73,7 +73,7 @@ h3, h4 {
     text-align: center;
 }
 
-h4 {margin: 0;}
+h4 {margin: 15px 0}
 
 /********* LINKS *********/
 
@@ -253,7 +253,7 @@ header button {
 }
 
 .attributes, 
-.cust_orders {
+.cust_order_list {
     background-color: #d6efc799;
     padding: 0 20px;
     border-radius: 5px;
@@ -262,12 +262,12 @@ header button {
     margin-bottom: 20px;
 }
 
-.cust_orders div { 
-    width: 40vw;    
+.cust_order_list div { 
     margin: 15px 0;
 }
 
-.attributes div {
+.attributes div, 
+.cust_order_list {
     width: 40vw;
     display: flex;
     align-items: center;
@@ -275,7 +275,7 @@ header button {
 }
 
 .attributes div h3,
-.cust_orders div h3 {
+.cust_order_list div h3 {
     font-weight: bolder;
     margin-bottom: 0;
     margin-right: auto;

@@ -132,15 +132,27 @@ function customerDeets(data) {
         document.querySelector('.attributes').appendChild(newDiv)
     }
 
+    createCustOrderTable();
     addNewOrderBtn(data.name);
 
     // ADD CUSTOMER ORDERS TABLE
-    // let orderTable = createCustOrderTable(id);
+    //createCustOrderTable(id);
     // append to cust_orders 
     
 }
 
 function createCustOrderTable(id){
+    let custOrders = document.querySelector('.cust_orders');
+    let OrdersHead = document.createElement('h2');
+    OrdersHead.textContent = 'Orders';
+    custOrders.appendChild(OrdersHead);
+
+    let custOrderList = document.createElement('div');
+    custOrderList.className = 'cust_order_list';
+    let orderDeets = document.createElement('h4');
+    orderDeets.textContent = 'No Orders at This Time';
+    custOrderList.appendChild(orderDeets);
+    custOrders.appendChild(custOrderList);
     // query databse for orders
     // if null, "No Orders at this time"
     // Else
@@ -303,7 +315,7 @@ function updateForm(pageName){
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea</label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><div><label for="order_status">Order Status<br><a class="silly_add" href="edit.html?status_add">Add a status</a></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><div><label for="order_status">Order Status<br><a class="silly_add" href="edit.html?status_add">Add a status</a></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
 
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
