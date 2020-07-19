@@ -37,6 +37,7 @@ CREATE TABLE teas (
 
 CREATE TABLE orders (
 	order_id INT NOT NULL AUTO_INCREMENT,
+    status ENUM('NEW', 'IN PROGRESS', 'COMPLETED', 'CANCELED'),
     order_date DATE NOT NULL,
     character_id INT NOT NULL,
     tea_id INT NOT NULL,
