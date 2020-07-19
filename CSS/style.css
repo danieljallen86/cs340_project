@@ -42,8 +42,6 @@ section {
 }
 
 .photo_credit {
-    /* width: 95%;
-    text-align: right; */
     position: absolute;
     bottom: 5px;
     right: 5px;
@@ -231,7 +229,6 @@ header button {
     margin: 0 30px;
     background-color: #96bb7c95;
     border-radius: 5px;
-    margin-bottom: 15px;
 }
 
 .big_nav li img {
