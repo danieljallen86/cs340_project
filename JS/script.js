@@ -12,14 +12,24 @@ const dummyData = {
         'order_id': 1846,
         'date': '2020-07-12',
         'customer': 'Fire Lord Zuko',
-        'tea': 'Jasmine'
+        'tea': 'Jasmine',
+        'status': 'Completed'
     }]
 }
+
+const dataKeys = {
+    customer: ['name', 'nation_id', 'bender', 'element'],
+    tea: ['name', 'caffeinated'],
+    order: ['order_id', 'date', 'customer', 'tea', 'status']
+}
+const nations = ['Air Nomad', 'Earth Kingdom', 'Fire Nation', 'Water Tribe'];
+const elements = ['Air', 'Earth', 'Fire', 'Water']
+const teas = ['Green', 'Lipton', 'Hot Leaf Juice'];
 
 const tableHeaders = {
     customer: ['Name', 'Nation', 'Bender', 'Element'],
     tea: ['Name', 'Caffeinated'],
-    order: ['Order Number', 'Date', 'Customer', 'Tea']
+    order: ['Order Number', 'Date', 'Customer', 'Tea', 'Order Status']
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -66,7 +76,6 @@ function updateTitle(pageName){
     else if (pageName === 'element_add') document.title = 'Add an Element'
     else if (pageName === 'nation_edit') document.title = 'Update a Nation Record';
     else if (pageName === 'element_edit') document.title = 'Update an Element';
-    else if (pageName === 'status_add') document.title = 'Add An Order Status';
 }
 
 function updateHeader(pageName){
@@ -87,7 +96,6 @@ function updateHeader(pageName){
     else if (pageName === 'element_add') header.textContent = 'Add an Element';
     else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record';
     else if (pageName === 'element_edit') header.textContent = 'Update an Element';
-    else if (pageName === 'status_add') header.textContent = 'Add An Order Status';
 }
 
 function updateBackButton(pageName){
@@ -225,7 +233,18 @@ function changeAddBtn(pageName){
 
 function populateTable(pageName){
     makeHeaders(pageName);
-    fillData(pageName, dummyData[pageName.split('_')[0]]);
+
+    //Ajax request
+    let request = new XMLHttpRequest();
+    const route = pageName === 'customer_list' ? 'chars' : pageName === 'tea_list' ? 'teas' : 'orders';
+    request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
+    request.addEventListener('load', function(){
+        myResponse = JSON.parse(request.responseText)['results'];
+        console.log(myResponse)
+        fillData(myResponse, pageName);
+    })
+    request.send(null);
+    // fillData(pageName, dummyData[pageName.split('_')[0]]);
 }
 
 function makeHeaders(pageName){
@@ -247,14 +266,15 @@ function makeHeaders(pageName){
     document.querySelector('.resutls_table').appendChild(newRow);
 }
 
-function fillData(pageName, data){
+function fillData(data, pageName){
     for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
         
-        let dataKeys = Object.keys(data[0]);
-        for (let j = 0; j < dataKeys.length; ++j) {
+        const keys = dataKeys[pageName.split('_')[0]]
+        for (let j = 0; j < keys.length; ++j) {
             let newCell = document.createElement('td');
-            newCell.textContent = data[i][dataKeys[j]];
+            newCell.textContent = data[i][keys[j]];
+            console.log(data[i][dataKeys[j]])
             newRow.appendChild(newCell)
         }
         newRow.appendChild(addFormBtns(newRow, data));
@@ -310,7 +330,7 @@ function delEntry(){
 function updateForm(pageName){
     // object of innerHTML
     const pageForms = {
-        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option><option value="air">Air Nomad</option><option value="earth">Earth Kingdom</option><option value="fire">Fire Nation</option><option value="water">Water Tribe</option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option><option value="avatar">All (Avatar)</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
+        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option><option value="avatar">All (Avatar)</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
 
         tea: '<div><label for="tea_name">Tea Name</label><input type="text" name="name" id="tea_name" required></div><div><label for="caff">Caffeinated?</label><div><input type="radio" name="caff" id="caff" value="true">True<input type="radio" name="caff" ="true">False</div></div><input class="form_btn" type="submit" name="add_tea" value="Add Tea">',
 
@@ -318,7 +338,7 @@ function updateForm(pageName){
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><div><label>Green <input type="checkbox" name="green"></label><label>Black <input type="checkbox" name="black"></label><label>Herbal <input type="checkbox" name="herbal"></label></div></div><div><label for="order_status">Order Status<br><a class="silly_add" href="edit.html?status_add">Add a status</a></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><div  id="tea_select"></div></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
 
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
@@ -328,6 +348,10 @@ function updateForm(pageName){
     let pageForm = document.querySelector('.master_form');
 
     pageForm.innerHTML = pageForms[formChoice];
+
+    if (pageName.includes('customer') || pageName.includes('order')) {
+        makeOptions(pageName);
+    }
 
     if (pageName.includes('edit')) {
         // fill form
@@ -347,6 +371,41 @@ function updateForm(pageName){
         let custField = document.getElementById('customer');
         // put customer name in customer field
         custField.value = window.location.search.slice(1).split('?')[1];
+    }
+}
+
+function makeOptions(pageName){
+    if (pageName.includes('customer')){
+        fillOptions(nations, 'select_nation');
+        fillOptions(elements, 'bender');
+    }
+
+    if (pageName.includes('order')){
+        fillRadios(teas)
+    }
+}
+
+function fillOptions(data, id){
+    const optionField = document.getElementById(id);
+    for (let item of data){
+        newOp = document.createElement('option');
+        newOp.value = item.toLowerCase();
+        newOp.text = item;
+        optionField.appendChild(newOp);
+    }
+}
+
+function fillRadios(data){
+    const teaOps = document.getElementById('tea_select');
+    for (let tea of data){
+        newTea = document.createElement('label');
+        newTea.textContent = tea;
+
+        newInput = document.createElement('input');
+        newInput.type = 'checkbox';
+        newInput.name = tea.toLowerCase();
+        newTea.appendChild(newInput);
+        teaOps.appendChild(newTea);
     }
 }
 

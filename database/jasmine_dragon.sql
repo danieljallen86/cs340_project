@@ -10,10 +10,10 @@ CREATE TABLE characters (
 	character_id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL,
 	nation_id INT NOT NULL,
-	bender BIT DEFAULT 0,
-	avatar BIT DEFAULT 0,
+	bender TINYINT DEFAULT 0,
+	avatar TINYINT DEFAULT 0,
 	PRIMARY KEY(character_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE nations (
 	nation_id INT NOT NULL AUTO_INCREMENT,
@@ -22,21 +22,21 @@ CREATE TABLE nations (
 	ruler_id INT DEFAULT NULL,
 	element_id INT DEFAULT NULL,
 	PRIMARY KEY (nation_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE elements (
 	element_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     original_bender VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY (element_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE teas (
 	tea_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     caffeinated BIT DEFAULT 1,
     PRIMARY KEY (tea_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE orders (
 	order_id INT NOT NULL AUTO_INCREMENT,
@@ -45,7 +45,7 @@ CREATE TABLE orders (
     character_id INT NOT NULL,
     tea_id INT NOT NULL,
     PRIMARY KEY (order_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE elements_bent (
 	character_id INT NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE elements_bent (
 		REFERENCES characters(character_id),
     FOREIGN KEY (element_id) 
 		REFERENCES elements(element_id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Foreign key additions 
 
@@ -115,7 +115,7 @@ INSERT INTO nations (name, capital, ruler_id, element_id)
         
 -- Insert Characters
 INSERT INTO characters (name, nation_id, bender, avatar)
-	VALUES ('Ang', (SELECT nation_id FROM nations WHERE name = 'Air Nomads'), 1, 1),
+	VALUES ('Aang', (SELECT nation_id FROM nations WHERE name = 'Air Nomads'), 1, 1),
 		   ('Zuko', (SELECT nation_id FROM nations WHERE name = 'Fire Nation'), 1, 0),
            ('Katara', (SELECT nation_id FROM nations WHERE name = 'Water Tribe'), 1, 0),
            ('Sokka', (SELECT nation_id FROM nations WHERE name = 'Water Tribe'), 0, 0),
@@ -148,7 +148,22 @@ INSERT INTO orders (status, order_date, character_id, tea_id)
            (3, '2020-04-05', (SELECT character_id FROM characters WHERE name = 'Iroh'), (SELECT tea_id FROM teas WHERE name = 'Ginseng')),
            (3, '2020-04-06', (SELECT character_id FROM characters WHERE name = 'Iroh'), (SELECT tea_id FROM teas WHERE name = 'Jasmine')),
            (3, '2020-04-07', (SELECT character_id FROM characters WHERE name = 'Iroh'), (SELECT tea_id FROM teas WHERE name = 'Green')), 
-           (3, '2020-04-07', (SELECT character_id FROM characters WHERE name = 'Jeong Jeong'), (SELECT tea_id FROM teas WHERE name = 'Matcha'));
+           (3, '2020-04-07', (SELECT character_id FROM characters WHERE name = 'Jeong Jeong'), (SELECT tea_id FROM teas WHERE name = 'Matcha')),
+           (4, '2020-04-03', (SELECT character_id FROM characters WHERE name = 'Tai Lee'), (SELECT tea_id FROM teas WHERE name = 'Pu-erh')),
+           (2, '2020-04-03', (SELECT character_id FROM characters WHERE name = 'Mai'), (SELECT tea_id FROM teas WHERE name = 'Yerba Matte')),
+           (1, '2020-04-04', (SELECT character_id FROM characters WHERE name = 'Jet'), (SELECT tea_id FROM teas WHERE name = 'Lipton')),
+           (4, '2020-04-05', (SELECT character_id FROM characters WHERE name = 'Bumi'), (SELECT tea_id FROM teas WHERE name = 'Green')),
+           (3, '2020-03-12', (SELECT character_id FROM characters WHERE name = 'Suki'), (SELECT tea_id FROM teas WHERE name = 'Chamomile')),
+           (3, '2020-07-07', (SELECT character_id FROM characters WHERE name = 'Gran Gran'), (SELECT tea_id FROM teas WHERE name = 'Oolong')),
+           (1, '2020-03-15', (SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT tea_id FROM teas WHERE name = 'White')),
+           (4, '2020-04-07', (SELECT character_id FROM characters WHERE name = 'Giatso'), (SELECT tea_id FROM teas WHERE name = 'Earl Grey')),
+           (1, '2020-05-07', (SELECT character_id FROM characters WHERE name = 'Paku'), (SELECT tea_id FROM teas WHERE name = 'Chai')),
+           (2, '2020-06-01', (SELECT character_id FROM characters WHERE name = 'Piandao'), (SELECT tea_id FROM teas WHERE name = 'English Breakfast')),
+           (3, '2020-02-17', (SELECT character_id FROM characters WHERE name = 'Sokka'), (SELECT tea_id FROM teas WHERE name = 'Lipton')),
+           (1, '2020-06-28', (SELECT character_id FROM characters WHERE name = 'Toph'), (SELECT tea_id FROM teas WHERE name = 'Ginger')),
+           (4, '2020-05-25', (SELECT character_id FROM characters WHERE name = 'The Duke'), (SELECT tea_id FROM teas WHERE name = 'White')),
+           (2, '2020-06-30', (SELECT character_id FROM characters WHERE name = 'Katara'), (SELECT tea_id FROM teas WHERE name = 'Matcha')),
+           (3, '2020-05-01', (SELECT character_id FROM characters WHERE name = 'Smellerbee'), (SELECT tea_id FROM teas WHERE name = 'Pu-erh'));
 
 -- Insert Elements Bent
 INSERT INTO elements_bent (character_id, element_id)

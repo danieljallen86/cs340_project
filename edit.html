@@ -73,7 +73,7 @@
                 </div>
                 <div>
                     <label>National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label> 
-                    <select name="bender">
+                    <select id="bender" name="bender">
                         <option value="none" default>None</option>
                         <option value="air">Air</option>
                         <option value="earth">Earth</option>
@@ -103,14 +103,14 @@
                 </div>
                 <div class="tea_selection">
                     <label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label>
-                    <div>
+                    <div id='tea_select'>
                         <label>Green <input type="checkbox" name="green"></label>
                         <label>Black <input type="checkbox" name="black"></label>
                         <label>Herbal <input type="checkbox" name="herbal"></label>
                     </div>
                 </div>
                 <div>
-                    <label for="order_status">Order Status<br><a class="silly_add" href="edit.html?status_add">Add a status</a></label>
+                    <label for="order_status">Order Status<br></label>
                     <select name="order_status" id="order_status">
                         <option value="new">New</option>
                         <option value="in_process">Processing</option>
