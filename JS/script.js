@@ -277,13 +277,13 @@ function fillData(data, pageName){
             console.log(data[i][dataKeys[j]])
             newRow.appendChild(newCell)
         }
-        newRow.appendChild(addFormBtns(newRow, data));
+        newRow.appendChild(addFormBtns(data[i]));
 
         document.querySelector('.resutls_table').appendChild(newRow);
     }
 }
 
-function addFormBtns(newRow, data){
+function addFormBtns(data){
     tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
                 ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
                 ['remove_entry','<ion-icon name="trash-outline"></ion-icon>',delEntry]];
@@ -294,13 +294,13 @@ function addFormBtns(newRow, data){
     cellForm.method = 'POST';
 
     for(let button of tableBtns){
-        let cellBtn = document.createElement('button')
+        let cellBtn = document.createElement('button');
         cellBtn.type = 'submit';
-        cellBtn.value = data[0]['name'] || data[0]['order_id'];
+        cellBtn.value = data['character_id'] || data['order_id'] || data['tea_id'];
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
-        cellBtn.addEventListener('click',function(){button[2](null)});
+        cellBtn.addEventListener('click',function(){button[2](data['character_id'] || data['order_id'] || data['tea_id'])});
         cellForm.appendChild(cellBtn);
     }
 
@@ -309,21 +309,21 @@ function addFormBtns(newRow, data){
     return newCell;
 }
 
-function viewEntry(){
-    let id = event.srcElement.value;
+function viewEntry(id){
     let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
     window.location.href=`detail.html?${entity}&${id}`
     event.preventDefault();
 }
 
-function editEntry(){
+function editEntry(id){
     let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
-    let id = event.srcElement.value
     window.location.href=`edit.html?${entity}_edit?${id}`;
     event.preventDefault();
 }
 
-function delEntry(){
+function delEntry(id){
+    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+    console.log(id)
     event.preventDefault();
 }
 
