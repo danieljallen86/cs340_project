@@ -330,7 +330,7 @@ function delEntry(){
 function updateForm(pageName){
     // object of innerHTML
     const pageForms = {
-        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option><option value="avatar">All (Avatar)</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
+        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
 
         tea: '<div><label for="tea_name">Tea Name</label><input type="text" name="name" id="tea_name" required></div><div><label for="caff">Caffeinated?</label><div><input type="radio" name="caff" id="caff" value="true">True<input type="radio" name="caff" ="true">False</div></div><input class="form_btn" type="submit" name="add_tea" value="Add Tea">',
 
@@ -381,16 +381,22 @@ function makeOptions(pageName){
     }
 
     if (pageName.includes('order')){
-        fillRadios(teas)
+        fillRadios(teas);
     }
 }
 
 function fillOptions(data, id){
     const optionField = document.getElementById(id);
     for (let item of data){
-        newOp = document.createElement('option');
+        let newOp = document.createElement('option');
         newOp.value = item.toLowerCase();
         newOp.text = item;
+        optionField.appendChild(newOp);
+    }
+    if (id === 'bender'){
+        let newOp = document.createElement('option');
+        newOp.value = 'avatar';
+        newOp.text = 'Avatar (all)';
         optionField.appendChild(newOp);
     }
 }
