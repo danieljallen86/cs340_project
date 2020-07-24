@@ -34,7 +34,7 @@ CREATE TABLE elements (
 CREATE TABLE teas (
 	tea_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
-    caffeinated BIT DEFAULT 1,
+    caffeinated TINYINT DEFAULT 1,
     PRIMARY KEY (tea_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

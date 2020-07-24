@@ -18,18 +18,18 @@ const dummyData = {
 }
 
 const dataKeys = {
-    customer: ['name', 'nation_id', 'bender', 'element'],
+    customer: ['charname', 'naysh', 'bender', 'element'],
     tea: ['name', 'caffeinated'],
-    order: ['order_id', 'date', 'customer', 'tea', 'status']
+    order: ['order_id', 'order_date', 'status', 'charname', 'tea']
 }
 const nations = ['Air Nomad', 'Earth Kingdom', 'Fire Nation', 'Water Tribe'];
-const elements = ['Air', 'Earth', 'Fire', 'Water']
-const teas = ['Green', 'Lipton', 'Hot Leaf Juice'];
+const elements = ['Air', 'Earth', 'Fire', 'Water'];
+// const teas = ['Green', 'Lipton', 'Hot Leaf Juice'];
 
 const tableHeaders = {
     customer: ['Name', 'Nation', 'Bender', 'Element'],
     tea: ['Name', 'Caffeinated'],
-    order: ['Order Number', 'Date', 'Customer', 'Tea', 'Order Status']
+    order: ['Order Number', 'Date', 'Order Status', 'Customer', 'Tea']
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -44,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
             changeAddBtn(pageName);
             if (pageName.includes('tea')) {
                 document.getElementById('search_bar').style.display = 'none'
-            }
+            };
+            document.querySelector('.search_btn').addEventListener('click', searchTable);
         } 
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateTitle(pageName);
@@ -240,17 +241,17 @@ function populateTable(pageName){
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        console.log(myResponse)
+        // console.log(myResponse)
         fillData(myResponse, pageName);
     })
     request.send(null);
-    // fillData(pageName, dummyData[pageName.split('_')[0]]);
 }
 
 function makeHeaders(pageName){
 
     //make header
     let newRow = document.createElement('tr');
+    newRow.className = 'table_head';
 
     for (let header of tableHeaders[pageName.split('_')[0]]){
         let newCell = document.createElement('th');
@@ -269,12 +270,21 @@ function makeHeaders(pageName){
 function fillData(data, pageName){
     for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
+        newRow.className = pageName.includes('order') ? `${data[i]['order_id']} ${data[i]['charname']}` : `${data[i]['charname']}`;
         
         const keys = dataKeys[pageName.split('_')[0]]
         for (let j = 0; j < keys.length; ++j) {
             let newCell = document.createElement('td');
-            newCell.textContent = data[i][keys[j]];
-            console.log(data[i][dataKeys[j]])
+            if (keys[j] === 'bender'){
+                newCell.textContent = data[i][keys[j]] === 1 ? 'Yes' : 'No';
+            } else if (keys[j] === 'element') {
+                newCell.textContent = data[i][keys[j]] !== null ? data[i][keys[j]] : 'NA';
+            } else if (keys[j] === 'order_date') {
+                let dateArr = data[i][keys[j]].slice(0,10).split('-');
+                newCell.textContent = `${Number(dateArr[1])}/${Number(dateArr[2])}/${dateArr[0]}`
+            } else {
+                newCell.textContent = data[i][keys[j]];
+            }
             newRow.appendChild(newCell)
         }
         newRow.appendChild(addFormBtns(data[i]));
@@ -327,6 +337,22 @@ function delEntry(id){
     event.preventDefault();
 }
 
+function searchTable(){
+    console.log('searched')
+    let rows = document.querySelectorAll('tr');
+    let searchIt = document.getElementById('list_search');
+
+    for (let node of rows){
+        if (!searchIt.value) {
+            node.style.display = '';
+        } else {
+            if (!node.className.includes(searchIt.value) && node.className !== 'table_head'){
+                node.style.display = 'none'
+            }
+        }
+    }
+}
+
 function updateForm(pageName){
     // object of innerHTML
     const pageForms = {
@@ -376,8 +402,10 @@ function updateForm(pageName){
 
 function makeOptions(pageName){
     if (pageName.includes('customer')){
-        fillOptions(nations, 'select_nation');
-        fillOptions(elements, 'bender');
+        const nationOp = new Promise((resolve, reject) => {
+            fillOptions('nations', 'select_nation');
+        })
+        nationOp.then(fillOptions('elements', 'bender'))
     }
 
     if (pageName.includes('order')){
@@ -385,34 +413,56 @@ function makeOptions(pageName){
     }
 }
 
-function fillOptions(data, id){
+function fillOptions(route, id){
     const optionField = document.getElementById(id);
-    for (let item of data){
-        let newOp = document.createElement('option');
-        newOp.value = item.toLowerCase();
-        newOp.text = item;
-        optionField.appendChild(newOp);
-    }
-    if (id === 'bender'){
-        let newOp = document.createElement('option');
-        newOp.value = 'avatar';
-        newOp.text = 'Avatar (all)';
-        optionField.appendChild(newOp);
-    }
+    
+    request = new XMLHttpRequest();
+    request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
+    request.addEventListener('load', function(){
+        myResponse = JSON.parse(request.responseText)['results'];
+        console.log(myResponse)
+        
+        for (let item of myResponse){
+            let newOp = document.createElement('option');
+            newOp.value = item['name'].toLowerCase();
+            newOp.text = item['name'];
+            optionField.appendChild(newOp);
+        }
+        if (id === 'bender'){
+            let newOp = document.createElement('option');
+            newOp.value = 'avatar';
+            newOp.text = 'Avatar (all)';
+            optionField.appendChild(newOp);
+        }
+    })
+    request.send(null);
+
+
 }
 
 function fillRadios(data){
     const teaOps = document.getElementById('tea_select');
-    for (let tea of data){
-        newTea = document.createElement('label');
-        newTea.textContent = tea;
 
-        newInput = document.createElement('input');
-        newInput.type = 'checkbox';
-        newInput.name = tea.toLowerCase();
-        newTea.appendChild(newInput);
-        teaOps.appendChild(newTea);
-    }
+    // get list of teas
+    request = new XMLHttpRequest();
+    request.open("GET", "http://flip3.engr.oregonstate.edu:4568/teas", true);
+    request.addEventListener('load', function(){
+        myResponse = JSON.parse(request.responseText)['results'];
+        console.log(myResponse)
+        for (let tea of myResponse){
+            newTea = document.createElement('label');
+            newTea.textContent = tea['name'];
+
+            newInput = document.createElement('input');
+            newInput.type = 'checkbox';
+            newInput.name = tea['name'].toLowerCase();
+            newTea.appendChild(newInput);
+            teaOps.appendChild(newTea);
+        }
+    })
+    request.send(null);
+
+
 }
 
 function populateFields(pageName){}
