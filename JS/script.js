@@ -402,21 +402,20 @@ function updateForm(pageName){
 
 function makeOptions(pageName){
     if (pageName.includes('customer')){
-        const nationOp = new Promise((resolve, reject) => {
-            fillOptions('nations', 'select_nation');
-        })
-        nationOp.then(fillOptions('elements', 'bender'))
+        fillOptions('nations', 'select_nation');
+        fillOptions('elements', 'bender')
     }
+    
 
     if (pageName.includes('order')){
-        fillRadios(teas);
+        fillRadios();
     }
 }
 
-function fillOptions(route, id){
+async function fillOptions(route, id){
     const optionField = document.getElementById(id);
     
-    request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
@@ -436,11 +435,9 @@ function fillOptions(route, id){
         }
     })
     request.send(null);
-
-
 }
 
-function fillRadios(data){
+function fillRadios(){
     const teaOps = document.getElementById('tea_select');
 
     // get list of teas
