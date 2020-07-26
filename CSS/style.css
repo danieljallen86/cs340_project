@@ -260,6 +260,25 @@ header button {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+}
+
+.search_btn {margin-top: 20px;}
+
+.search_bar div {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.search_bar div input {
+    width: 40%;
+    text-align: center;
+}
+
+.search_bar div h3 {
+    margin: 0 auto;
 }
 
 .search_bar h3 { 

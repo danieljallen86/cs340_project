@@ -22,9 +22,6 @@ const dataKeys = {
     tea: ['name', 'caffeinated'],
     order: ['order_id', 'order_date', 'status', 'charname', 'tea']
 }
-const nations = ['Air Nomad', 'Earth Kingdom', 'Fire Nation', 'Water Tribe'];
-const elements = ['Air', 'Earth', 'Fire', 'Water'];
-// const teas = ['Green', 'Lipton', 'Hot Leaf Juice'];
 
 const tableHeaders = {
     customer: ['Name', 'Nation', 'Bender', 'Element'],
@@ -42,9 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
             updateHeader(pageName);
             populateTable(pageName);
             changeAddBtn(pageName);
+
+            // clear the fields
+            document.querySelector('#order_search').value = '';
+            document.querySelector('#name_search').value = '';
+
             if (pageName.includes('tea')) {
-                document.getElementById('search_bar').style.display = 'none'
-            };
+                document.getElementById('search_bar').style.display = 'none';
+            } else if (pageName.includes('customer')) {
+                document.querySelector('.order_search').style.display = 'none'
+            }
             document.querySelector('.search_btn').addEventListener('click', searchTable);
         } 
         else if (pageName.includes('edit') || pageName.includes('add')){
@@ -282,6 +286,8 @@ function fillData(data, pageName){
             } else if (keys[j] === 'order_date') {
                 let dateArr = data[i][keys[j]].slice(0,10).split('-');
                 newCell.textContent = `${Number(dateArr[1])}/${Number(dateArr[2])}/${dateArr[0]}`
+            } else if (keys[j] === 'caffeinated') {
+                newCell.textContent = data[i][keys[j]] === 1 ? 'Caffeinated' : 'Decaf'
             } else {
                 newCell.textContent = data[i][keys[j]];
             }
@@ -297,8 +303,6 @@ function addFormBtns(data){
     tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
                 ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
                 ['remove_entry','<ion-icon name="trash-outline"></ion-icon>',delEntry]];
-    //console.log(data)           
-    //add edit and remove buttons
     let newCell = document.createElement('td');
     let cellForm = document.createElement('form');
     cellForm.method = 'POST';
@@ -340,13 +344,16 @@ function delEntry(id){
 function searchTable(){
     console.log('searched')
     let rows = document.querySelectorAll('tr');
-    let searchIt = document.getElementById('list_search');
+    let nameSearch = document.getElementById('name_search');
+    let orderSearch = document.getElementById('order_search');
 
     for (let node of rows){
-        if (!searchIt.value) {
+        if (!nameSearch.value && !orderSearch.value) {
+            console.log('none')
             node.style.display = '';
         } else {
-            if (!node.className.includes(searchIt.value) && node.className !== 'table_head'){
+            if (!node.className.includes(nameSearch.value || orderSearch.value) && node.className !== 'table_head'){
+                console.log('here')
                 node.style.display = 'none'
             }
         }
