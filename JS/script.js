@@ -133,11 +133,10 @@ function displayDetails(entity, id){
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function(){
         myResponse = request.responseText;
-        // fillData(myResponse, 'customer')
+        console.log(myResponse)
         if (entity === 'customer') customerDeets(myResponse);
         else if (entity === 'tea') teaDeets(myResponse);
         else if (entity === 'order') orderDeets(myResponse); 
-        console.log(myResponse)   
     })
     request.send(null);
 
@@ -170,12 +169,7 @@ function customerDeets(data) {
     }
 
     createCustOrderTable();
-    addNewOrderBtn(data.name);
-
-    // ADD CUSTOMER ORDERS TABLE
-    //createCustOrderTable(id);
-    // append to cust_orders 
-    
+    addNewOrderBtn(data.name);   
 }
 
 function createCustOrderTable(id){
@@ -185,19 +179,11 @@ function createCustOrderTable(id){
     let custOrderList = document.createElement('table');
     custOrderList.className = 'results_table';
     custOrders.appendChild(custOrderList);
-    // let orderDeets = document.createElement('h4');
-    // orderDeets.textContent = 'No Orders at This Time';
-    // custOrderList.appendChild(orderDeets);
-    // custOrders.appendChild(custOrderList);
 
+
+    // query database for individual's orders
     populateTable('order_deets')
 
-    // query databse for orders
-    // if null, "No Orders at this time"
-    // Else
-    // create div element
-    // fill table with values like in the Deets
-    // return div element
 }
 
 function addNewOrderBtn(name){
@@ -225,7 +211,8 @@ function teaDeets(data){
         newDiv.appendChild(newLabel)
 
         if (attribute === 'Tea Name') newData.textContent = data.name;
-        else if (attribute === 'Caffeinated') newData.textContent = data.caffeinated;
+        else if (attribute === 'Caffeinated') newData.textContent = data.caffeinated === 1 ?
+        'Caffeinated' : 'Decaf';
 
         newDiv.appendChild(newData)
         document.querySelector('.attributes').appendChild(newDiv)
@@ -236,19 +223,22 @@ function orderDeets(data){
     document.title = `Order No. ${data.order_id}`;
     document.querySelector('.entity_name').textContent = `Order Number ${data.order_id}`;
 
-    for (let attribute of ['Date', 'Customer', 'Tea']) {
+    for (let attribute of ['Status', 'Date', 'Customer', 'Tea']) {
         let newDiv = document.createElement('div');
         let newLabel = document.createElement('h3');
         let newData = document.createElement('span');
 
         newLabel.textContent = attribute;
         newDiv.appendChild(newLabel)
+        if (attribute === 'Status') newData.textContent = data.status;
+        else if (attribute === 'Date') {
+            let dateArr = data.order_date.slice(0,10).split('-');
+            newData.textContent = `${Number(dateArr[1])}/${Number(dateArr[2])}/${dateArr[0]}`;
+        }
+        else if (attribute === 'Customer') newData.textContent = data.character_id;
+        else newData.textContent = data.tea_id;
 
-        if (attribute === 'Date') newData.textContent = data.date.split('-').reverse().join('-');
-        else if (attribute === 'Customer') newData.textContent = data.customer;
-        else newData.textContent = data.tea
-
-        newDiv.appendChild(newData)
+        newDiv.appendChild(newData);
         document.querySelector('.attributes').appendChild(newDiv)
     }
 }
@@ -352,7 +342,8 @@ function addFormBtns(data){
 }
 
 function viewEntry(id){
-    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+    let entity = (String(document.location).split('?')[1].includes('customer&'))? 'order' :
+         event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
     window.location.href=`detail.html?${entity}&${id}`
     event.preventDefault();
 }

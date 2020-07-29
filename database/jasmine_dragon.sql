@@ -52,9 +52,13 @@ CREATE TABLE elements_bent (
     element_id INT NOT NULL,
     PRIMARY KEY (character_id, element_id),
     FOREIGN KEY (character_id) 
-		REFERENCES characters(character_id),
+		REFERENCES characters(character_id)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE,
     FOREIGN KEY (element_id) 
 		REFERENCES elements(element_id)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Foreign key additions 
@@ -89,12 +93,16 @@ ALTER TABLE elements
 ALTER TABLE orders
 	ADD CONSTRAINT customer_fk
 	FOREIGN KEY (character_id)
-		REFERENCES characters(character_id);
+		REFERENCES characters(character_id)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE;
         
 ALTER TABLE orders
 	ADD CONSTRAINT tea_fk
 	FOREIGN KEY (tea_id)
-		REFERENCES teas(tea_id);
+		REFERENCES teas(tea_id)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE;
 
 -- Insert Elements
 INSERT INTO elements (name, original_bender)
@@ -141,7 +149,7 @@ INSERT INTO characters (name, nation_id, bender, avatar)
 INSERT INTO orders (status, order_date, character_id, tea_id)
 	VALUES (1, CURRENT_TIMESTAMP, (SELECT character_id FROM characters WHERE name = 'Zuko'), (SELECT tea_id FROM teas WHERE name = 'Jasmine')), 
 		   (4, '2020-03-20', (SELECT character_id FROM characters WHERE name = 'Azula'), (SELECT tea_id FROM teas WHERE name = 'Gunpowder')), 
-           (3, '2020-02-14', (SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT tea_id FROM teas WHERE name = 'Jasmine')), 
+           (3, '2020-02-14', (SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT tea_id FROM teas WHERE name = 'Jasmine')), 
            (3, '2020-02-14', (SELECT character_id FROM characters WHERE name = 'Katara'), (SELECT tea_id FROM teas WHERE name = 'Mint')),
            (2, CURRENT_TIMESTAMP, (SELECT character_id FROM characters WHERE name = 'Sokka'), (SELECT tea_id FROM teas WHERE name = 'Pu-erh')), 
            (2, CURRENT_TIMESTAMP, (SELECT character_id FROM characters WHERE name = 'Suki'), (SELECT tea_id FROM teas WHERE name = 'Chamomile')),
@@ -155,7 +163,7 @@ INSERT INTO orders (status, order_date, character_id, tea_id)
            (4, '2020-04-05', (SELECT character_id FROM characters WHERE name = 'Bumi'), (SELECT tea_id FROM teas WHERE name = 'Green')),
            (3, '2020-03-12', (SELECT character_id FROM characters WHERE name = 'Suki'), (SELECT tea_id FROM teas WHERE name = 'Chamomile')),
            (3, '2020-07-07', (SELECT character_id FROM characters WHERE name = 'Gran Gran'), (SELECT tea_id FROM teas WHERE name = 'Oolong')),
-           (1, '2020-03-15', (SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT tea_id FROM teas WHERE name = 'White')),
+           (1, '2020-03-15', (SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT tea_id FROM teas WHERE name = 'White')),
            (4, '2020-04-07', (SELECT character_id FROM characters WHERE name = 'Giatso'), (SELECT tea_id FROM teas WHERE name = 'Earl Grey')),
            (1, '2020-05-07', (SELECT character_id FROM characters WHERE name = 'Paku'), (SELECT tea_id FROM teas WHERE name = 'Chai')),
            (2, '2020-06-01', (SELECT character_id FROM characters WHERE name = 'Piandao'), (SELECT tea_id FROM teas WHERE name = 'English Breakfast')),
@@ -167,10 +175,10 @@ INSERT INTO orders (status, order_date, character_id, tea_id)
 
 -- Insert Elements Bent
 INSERT INTO elements_bent (character_id, element_id)
-	VALUES ((SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT element_id FROM elements WHERE name = 'Air')),
-		   ((SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT element_id FROM elements WHERE name = 'Water')), 
-           ((SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT element_id FROM elements WHERE name = 'Earth')), 
-           ((SELECT character_id FROM characters WHERE name = 'Ang'), (SELECT element_id FROM elements WHERE name = 'Fire')), 
+	VALUES ((SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT element_id FROM elements WHERE name = 'Air')),
+		   ((SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT element_id FROM elements WHERE name = 'Water')), 
+           ((SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT element_id FROM elements WHERE name = 'Earth')), 
+           ((SELECT character_id FROM characters WHERE name = 'Aang'), (SELECT element_id FROM elements WHERE name = 'Fire')), 
            ((SELECT character_id FROM characters WHERE name = 'Zuko'), (SELECT element_id FROM elements WHERE name = 'Fire')), 
            ((SELECT character_id FROM characters WHERE name = 'Katara'), (SELECT element_id FROM elements WHERE name = 'Water')), 
            ((SELECT character_id FROM characters WHERE name = 'Toph'), (SELECT element_id FROM elements WHERE name = 'Earth')), 
@@ -180,4 +188,3 @@ INSERT INTO elements_bent (character_id, element_id)
            ((SELECT character_id FROM characters WHERE name = 'Paku'), (SELECT element_id FROM elements WHERE name = 'Water')), 
 		   ((SELECT character_id FROM characters WHERE name = 'Bumi'), (SELECT element_id FROM elements WHERE name = 'Earth')), 
            ((SELECT character_id FROM characters WHERE name = 'Jeong Jeong'), (SELECT element_id FROM elements WHERE name = 'Fire'));
-
