@@ -9,7 +9,7 @@ USE jasmine_dragon;
 CREATE TABLE characters (
 	character_id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(255) NOT NULL,
-	nation_id INT NOT NULL,
+	nation_id INT DEFAULT NULL,
 	bender TINYINT DEFAULT 0,
 	avatar TINYINT DEFAULT 0,
 	PRIMARY KEY(character_id)
@@ -66,7 +66,9 @@ CREATE TABLE elements_bent (
 ALTER TABLE characters
 	ADD CONSTRAINT nation_fk
     FOREIGN KEY (nation_id) 
-		REFERENCES nations(nation_id);
+		REFERENCES nations(nation_id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL;
         
 ALTER TABLE characters
 	ADD CONSTRAINT unique_char_name
@@ -75,7 +77,9 @@ ALTER TABLE characters
 ALTER TABLE nations
 	ADD CONSTRAINT element_fk
     FOREIGN KEY (element_id)
-		REFERENCES elements(element_id);
+		REFERENCES elements(element_id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL;
         
 ALTER TABLE nations
 	ADD CONSTRAINT ruler_fk
