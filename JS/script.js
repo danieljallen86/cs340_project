@@ -60,6 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (String(window.location).includes('detail')){
             let entity = window.location.search.slice(1).split('&')[0];
             let id = window.location.search.split('&')[1];
+
+            if (entity === 'order' || entity === 'tea'){
+                document.querySelector('.cust_orders').style.display = 'none';
+            }
         
             updateDetailPageBtns(entity, id);
             displayDetails(entity, id);
@@ -121,16 +125,33 @@ function updateDetailPageBtns(entity, id){
 }
 
 function displayDetails(entity, id){
-    // query database with id
-    document.title = (entity === 'order')? `Order No. ${id}`: id;
-    let data = dummyData[entity][0]
-    // console.log(data)
-    if (entity === 'customer') customerDeets(data);
-    else if (entity === 'tea') teaDeets(data);
-    else if (entity === 'order') orderDeets(data);
+    // query database for entity information
+    let request = new XMLHttpRequest();
+
+    const entInfo = {id: id};
+    request.open("GET", `http://flip3.engr.oregonstate.edu:4568/ind-${entity}?id=${id}`, true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.addEventListener('load', function(){
+        myResponse = request.responseText;
+        // fillData(myResponse, 'customer')
+        if (entity === 'customer') customerDeets(myResponse);
+        else if (entity === 'tea') teaDeets(myResponse);
+        else if (entity === 'order') orderDeets(myResponse); 
+        console.log(myResponse)   
+    })
+    request.send(null);
+
+    // document.title = (entity === 'order')? `Order No. ${id}`: id;
+    // let data = dummyData[entity][0]
+    // // console.log(data)
+
 }
 
 function customerDeets(data) {
+
+    let request = new XMLHttpRequest();
+
+
     document.querySelector('.entity_name').textContent = data.name
     for (let attribute of ['Nation', 'Bender', 'Element']) {
         let newDiv = document.createElement('div');
@@ -159,16 +180,18 @@ function customerDeets(data) {
 
 function createCustOrderTable(id){
     let custOrders = document.querySelector('.cust_orders');
-    let OrdersHead = document.createElement('h2');
-    OrdersHead.textContent = 'Orders';
-    custOrders.appendChild(OrdersHead);
+    // custOrders.appendChild(OrdersHead);
 
-    let custOrderList = document.createElement('div');
-    custOrderList.className = 'cust_order_list';
-    let orderDeets = document.createElement('h4');
-    orderDeets.textContent = 'No Orders at This Time';
-    custOrderList.appendChild(orderDeets);
+    let custOrderList = document.createElement('table');
+    custOrderList.className = 'results_table';
     custOrders.appendChild(custOrderList);
+    // let orderDeets = document.createElement('h4');
+    // orderDeets.textContent = 'No Orders at This Time';
+    // custOrderList.appendChild(orderDeets);
+    // custOrders.appendChild(custOrderList);
+
+    populateTable('order_deets')
+
     // query databse for orders
     // if null, "No Orders at this time"
     // Else
@@ -191,6 +214,7 @@ function addNewOrderBtn(name){
 }
 
 function teaDeets(data){
+    document.title = data.name;
     document.querySelector('.entity_name').textContent = data.name
     for (let attribute of ['Tea Name', 'Caffeinated']) {
         let newDiv = document.createElement('div');
@@ -209,6 +233,7 @@ function teaDeets(data){
 }
 
 function orderDeets(data){
+    document.title = `Order No. ${data.order_id}`;
     document.querySelector('.entity_name').textContent = `Order Number ${data.order_id}`;
 
     for (let attribute of ['Date', 'Customer', 'Tea']) {
@@ -245,7 +270,6 @@ function populateTable(pageName){
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        // console.log(myResponse)
         fillData(myResponse, pageName);
     })
     request.send(null);
@@ -268,7 +292,7 @@ function makeHeaders(pageName){
     newRow.appendChild(newCell)
 
 
-    document.querySelector('.resutls_table').appendChild(newRow);
+    document.querySelector('.results_table').appendChild(newRow);
 }
 
 function fillData(data, pageName){
@@ -295,8 +319,12 @@ function fillData(data, pageName){
         }
         newRow.appendChild(addFormBtns(data[i]));
 
-        document.querySelector('.resutls_table').appendChild(newRow);
+        document.querySelector('.results_table').appendChild(newRow);
     }
+}
+
+function oneCustOrders(){
+
 }
 
 function addFormBtns(data){
@@ -310,11 +338,11 @@ function addFormBtns(data){
     for(let button of tableBtns){
         let cellBtn = document.createElement('button');
         cellBtn.type = 'submit';
-        cellBtn.value = data['character_id'] || data['order_id'] || data['tea_id'];
+        cellBtn.value = data['order_id'] || data['character_id'] || data['tea_id'];
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
-        cellBtn.addEventListener('click',function(){button[2](data['character_id'] || data['order_id'] || data['tea_id'])});
+        cellBtn.addEventListener('click',function(){button[2](data['order_id'] || data['character_id'] || data['tea_id'])});
         cellForm.appendChild(cellBtn);
     }
 
