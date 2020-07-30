@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pageName.includes('add')){
                 fillFormData();
             }
+            document.querySelector('.form_btn').addEventListener('click', insertEdit);
         }
         else if (String(window.location).includes('detail')){
             let entity = window.location.search.slice(1).split('&')[0];
@@ -318,6 +319,8 @@ function editEntry(id){
 function delEntry(id){
     let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
     console.log(id)
+    // determine route based on entity
+    // submit query with id (method: Delete, )
     event.preventDefault();
 }
 
@@ -341,15 +344,15 @@ function searchTable(){
 function updateForm(pageName){
     // object of innerHTML
     const pageForms = {
-        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value="none" default>No</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
+        customer: '<div><label for="name">Customer Name</label><input type="text" name="name" id = "name" required=""></div><div><label for="select_nation">Nation <a class="silly_add" href="edit.html?nation_add"><br>add a nation</a></label><select name="nation" id="select_nation"><option selected="true" value=null default> -- select a nation -- </option></select></div><div><label for="bender">Bender? <a class="silly_add" href="edit.html?element_add"><br>add an element</a></label><select name="bender" id="bender"><option value=null default>No</option></select></div><input class="form_btn" type="submit" name="add_cust" value="Add Customer">',
 
         tea: '<div><label for="tea_name">Tea Name</label><input type="text" name="name" id="tea_name" required></div><div><label for="caff">Caffeinated?</label><div><input type="radio" name="caff" id="caff" value="true">True<input type="radio" name="caff" ="true">False</div></div><input class="form_btn" type="submit" name="add_tea" value="Add Tea">',
 
-        nation: '<div><label for="nation">Nation</label><input type="text" name="name" id= "nation" required></div><div><label for="captial">Capital</label><input type="text" name="capital" id="captial"></div><div><label for="ruler">Ruler</label><input type="text" name="ruler" id="ruler"></div><div><label for="element">National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label><select name="element" id="element"><option value="none" default>None</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option></select></div><input class="form_btn" type="submit" name="add_nation" value="Add Nation">',
+        nation: '<div><label for="nation">Nation</label><input type="text" name="name" id= "nation" required></div><div><label for="captial">Capital</label><input type="text" name="capital" id="captial"></div><div><label for="ruler">Ruler</label><input type="text" name="ruler" id="ruler"></div><div><label for="element">National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label><select name="element" id="element"><option value=null default>None</option><option value="air">Air</option><option value="earth">Earth</option><option value="fire">Fire</option><option value="water">Water</option></select></div><input class="form_btn" type="submit" name="add_nation" value="Add Nation">',
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><div  id="tea_select"></div></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label><input type="text" name="customer" id="customer" required></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><select id="tea_select"><option value=null default> -- select a tea -- </option></select></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
 
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
@@ -388,7 +391,7 @@ function makeOptions(pageName){
     }
     
     if (pageName.includes('order')){
-        fillRadios();
+        fillOptions('teas', 'tea_select');
     }
 }
 
@@ -402,7 +405,7 @@ async function fillOptions(route, id){
         
         for (let item of myResponse){
             let newOp = document.createElement('option');
-            newOp.value = item['name'].toLowerCase();
+            newOp.value = item['element_id'] || item['nation_id'] || item['tea_id'];
             newOp.text = item['name'];
             optionField.appendChild(newOp);
         }
@@ -416,37 +419,18 @@ async function fillOptions(route, id){
     request.send(null);
 }
 
-function fillRadios(){
-    const teaOps = document.getElementById('tea_select');
-
-    // get list of teas
-    request = new XMLHttpRequest();
-    request.open("GET", "http://flip3.engr.oregonstate.edu:4568/teas", true);
-    request.addEventListener('load', function(){
-        myResponse = JSON.parse(request.responseText)['results'];
-        for (let tea of myResponse){
-            newTea = document.createElement('label');
-            newTea.textContent = tea['name'];
-
-            newInput = document.createElement('input');
-            newInput.type = 'checkbox';
-            newInput.name = tea['name'].toLowerCase();
-            newTea.appendChild(newInput);
-            teaOps.appendChild(newTea);
-        }
-    })
-    request.send(null);document.querse
-}
-
 function fillFormData(){
     // get url parameters (set them to match input id)
     // put data in fields
 }
 
 function insertEdit(){
+    console.log('Insert or edit it yourself');
+
     // if add use route...
     // else if edit use route...
     // package data
     // send request
     // redirect to previous page
+    event.preventDefault();
 }
