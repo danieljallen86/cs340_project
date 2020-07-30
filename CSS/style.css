@@ -377,10 +377,16 @@ form div input,
 form div select {
     text-align: center;
     margin-left: auto;
+    background-color: #d6efc7;
+    border-radius: 5px;
+    color: #184d47;
+    height: 35px;
+    border: solid 1px #96bb7c99;
+    /* box-shadow: #96bb7c99 1px 3px; */
 }
 
 form div select {
-    width: 300px;
+    width: 287px;
 }
 
 .silly_add {

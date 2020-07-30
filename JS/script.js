@@ -294,7 +294,9 @@ function addFormBtns(data){
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
-        cellBtn.addEventListener('click',function(){button[2](data['order_id'] || data['character_id'] || data['tea_id'])});
+        cellBtn.addEventListener('click',function(){
+            button[2](data['order_id'] || data['character_id'] || data['tea_id'], 
+            data['order_id'] ? 'order' : data['character_id'] ? 'customer' : 'tea')});
         cellForm.appendChild(cellBtn);
     }
 
@@ -303,22 +305,18 @@ function addFormBtns(data){
     return newCell;
 }
 
-function viewEntry(id){
-    let entity = (String(document.location).split('?')[1].includes('customer&'))? 'order' :
-         event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+function viewEntry(id, entity){
     window.location.href=`detail.html?${entity}&${id}`
     event.preventDefault();
 }
 
-function editEntry(id){
-    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
+function editEntry(id, entity){
     window.location.href=`edit.html?${entity}_edit?${id}`;
     event.preventDefault();
 }
 
-function delEntry(id){
-    let entity = event.srcElement.ownerDocument.URL.split('?')[1].split('_')[0];
-    console.log(id)
+function delEntry(id, entity){
+    console.log(id, entity)
     // determine route based on entity
     // submit query with id (method: Delete, )
     event.preventDefault();
