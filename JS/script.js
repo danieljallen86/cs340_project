@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateHeader(pageName);
             updateForm(pageName);
             updateBackButton(pageName);
+            if (pageName.includes('add')){
+                fillFormData();
+            }
         }
         else if (String(window.location).includes('detail')){
             let entity = window.location.search.slice(1).split('&')[0];
@@ -129,14 +132,14 @@ function displayDetails(entity, id){
     let request = new XMLHttpRequest();
 
     const entInfo = {id: id};
-    request.open("GET", `http://flip3.engr.oregonstate.edu:4568/ind-${entity}?id=${id}`, true);
+    request.open("GET", `http://flip3.engr.oregonstate.edu:4568/ind-${entity === 'customer' ? 'char' : entity}?id=${id}`, true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function(){
-        myResponse = request.responseText;
+        myResponse = JSON.parse(request.responseText);
         console.log(myResponse)
         if (entity === 'customer') customerDeets(myResponse);
-        else if (entity === 'tea') teaDeets(myResponse);
-        else if (entity === 'order') orderDeets(myResponse); 
+        else if (entity === 'tea') teaDeets(myResponse['results'][0]);
+        else if (entity === 'order') orderDeets(myResponse['results'][0]); 
     })
     request.send(null);
 
@@ -147,11 +150,8 @@ function displayDetails(entity, id){
 }
 
 function customerDeets(data) {
-
-    let request = new XMLHttpRequest();
-
-
-    document.querySelector('.entity_name').textContent = data.name
+    let custData = data['results'][0];
+    document.querySelector('.entity_name').textContent = custData.name
     for (let attribute of ['Nation', 'Bender', 'Element']) {
         let newDiv = document.createElement('div');
         let newLabel = document.createElement('h3');
@@ -160,30 +160,28 @@ function customerDeets(data) {
         newLabel.textContent = attribute;
         newDiv.appendChild(newLabel)
 
-        if (attribute === 'Nation') newData.textContent = data.nation;
-        else if (attribute === 'Bender') newData.textContent = data.bender;
-        else newData.textContent = data.element
+        if (attribute === 'Nation') newData.textContent = custData.nation;
+        else if (attribute === 'Bender') newData.textContent = custData.bender === 1 ? 'Yes' : 'No';
+        else newData.textContent = custData.element;
 
         newDiv.appendChild(newData)
         document.querySelector('.attributes').appendChild(newDiv)
     }
 
-    createCustOrderTable();
+    createCustOrderTable(data['orders']);
     addNewOrderBtn(data.name);   
 }
 
-function createCustOrderTable(id){
-    let custOrders = document.querySelector('.cust_orders');
-    // custOrders.appendChild(OrdersHead);
+function createCustOrderTable(data){
+    makeHeaders('order_deets');
+    fillData(data, 'order_deets')
+}
 
-    let custOrderList = document.createElement('table');
-    custOrderList.className = 'results_table';
-    custOrders.appendChild(custOrderList);
-
-
-    // query database for individual's orders
+function oneCustOrders(){
     populateTable('order_deets')
-
+    // query database for all orders from passed customer
+    let request = new XMLHttpRequest();
+    
 }
 
 function addNewOrderBtn(name){
@@ -235,8 +233,8 @@ function orderDeets(data){
             let dateArr = data.order_date.slice(0,10).split('-');
             newData.textContent = `${Number(dateArr[1])}/${Number(dateArr[2])}/${dateArr[0]}`;
         }
-        else if (attribute === 'Customer') newData.textContent = data.character_id;
-        else newData.textContent = data.tea_id;
+        else if (attribute === 'Customer') newData.textContent = data.charname;
+        else newData.textContent = data.tea;
 
         newDiv.appendChild(newData);
         document.querySelector('.attributes').appendChild(newDiv)
@@ -286,6 +284,7 @@ function makeHeaders(pageName){
 }
 
 function fillData(data, pageName){
+    console.log(data)
     for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
         newRow.className = pageName.includes('order') ? `${data[i]['order_id']} ${data[i]['charname']}` : `${data[i]['charname']}`;
@@ -311,10 +310,6 @@ function fillData(data, pageName){
 
         document.querySelector('.results_table').appendChild(newRow);
     }
-}
-
-function oneCustOrders(){
-
 }
 
 function addFormBtns(data){
@@ -368,11 +363,9 @@ function searchTable(){
 
     for (let node of rows){
         if (!nameSearch.value && !orderSearch.value) {
-            console.log('none')
             node.style.display = '';
         } else {
             if (!node.className.includes(nameSearch.value || orderSearch.value) && node.className !== 'table_head'){
-                console.log('here')
                 node.style.display = 'none'
             }
         }
@@ -445,7 +438,7 @@ async function fillOptions(route, id){
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        console.log(myResponse)
+        // console.log(myResponse)
         
         for (let item of myResponse){
             let newOp = document.createElement('option');
@@ -471,7 +464,7 @@ function fillRadios(){
     request.open("GET", "http://flip3.engr.oregonstate.edu:4568/teas", true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        console.log(myResponse)
+        // console.log(myResponse)
         for (let tea of myResponse){
             newTea = document.createElement('label');
             newTea.textContent = tea['name'];
@@ -483,9 +476,18 @@ function fillRadios(){
             teaOps.appendChild(newTea);
         }
     })
-    request.send(null);
-
-
+    request.send(null);document.querse
 }
 
-function populateFields(pageName){}
+function fillFormData(){
+    // get url parameters (set them to match input id)
+    // put data in fields
+}
+
+function insertEdit(){
+    // if add use route...
+    // else if edit use route...
+    // package data
+    // send request
+    // redirect to previous page
+}
