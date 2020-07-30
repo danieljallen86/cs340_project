@@ -1,22 +1,3 @@
-const dummyData = {
-    customer: [{
-        'name': 'Ang',
-        'nation': 'Air Nomad', 
-        'bender': true,
-        'element': 'All (Avatar)'
-    }], 
-    tea:[{
-        'name': 'Jasmine',
-        'caffeinated': 'true'}],
-    order: [{
-        'order_id': 1846,
-        'date': '2020-07-12',
-        'customer': 'Fire Lord Zuko',
-        'tea': 'Jasmine',
-        'status': 'Completed'
-    }]
-}
-
 const dataKeys = {
     customer: ['charname', 'naysh', 'bender', 'element'],
     tea: ['name', 'caffeinated'],
@@ -136,17 +117,11 @@ function displayDetails(entity, id){
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText);
-        console.log(myResponse)
         if (entity === 'customer') customerDeets(myResponse);
         else if (entity === 'tea') teaDeets(myResponse['results'][0]);
         else if (entity === 'order') orderDeets(myResponse['results'][0]); 
     })
     request.send(null);
-
-    // document.title = (entity === 'order')? `Order No. ${id}`: id;
-    // let data = dummyData[entity][0]
-    // // console.log(data)
-
 }
 
 function customerDeets(data) {
@@ -175,13 +150,6 @@ function customerDeets(data) {
 function createCustOrderTable(data){
     makeHeaders('order_deets');
     fillData(data, 'order_deets')
-}
-
-function oneCustOrders(){
-    populateTable('order_deets')
-    // query database for all orders from passed customer
-    let request = new XMLHttpRequest();
-    
 }
 
 function addNewOrderBtn(name){
@@ -252,7 +220,6 @@ function changeAddBtn(pageName){
 function populateTable(pageName){
     makeHeaders(pageName);
 
-    //Ajax request
     let request = new XMLHttpRequest();
     const route = pageName === 'customer_list' ? 'chars' : pageName === 'tea_list' ? 'teas' : 'orders';
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
@@ -284,7 +251,6 @@ function makeHeaders(pageName){
 }
 
 function fillData(data, pageName){
-    console.log(data)
     for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
         newRow.className = pageName.includes('order') ? `${data[i]['order_id']} ${data[i]['charname']}` : `${data[i]['charname']}`;
@@ -388,7 +354,7 @@ function updateForm(pageName){
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
 
-    // update update form
+    // update form
     let formChoice = window.location.search.slice(1).split('_')[0];
     let pageForm = document.querySelector('.master_form');
 
@@ -399,10 +365,6 @@ function updateForm(pageName){
     }
 
     if (pageName.includes('edit')) {
-        // fill form
-            // query database 
-            populateFields();
-
         // change button name & value
         document.querySelector('.form_btn').value = 
             'Update ' +document.querySelector('.form_btn').value.split(' ').slice(1)
@@ -425,7 +387,6 @@ function makeOptions(pageName){
         fillOptions('elements', 'bender')
     }
     
-
     if (pageName.includes('order')){
         fillRadios();
     }
@@ -438,7 +399,6 @@ async function fillOptions(route, id){
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/${route}`, true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        // console.log(myResponse)
         
         for (let item of myResponse){
             let newOp = document.createElement('option');
@@ -464,7 +424,6 @@ function fillRadios(){
     request.open("GET", "http://flip3.engr.oregonstate.edu:4568/teas", true);
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText)['results'];
-        // console.log(myResponse)
         for (let tea of myResponse){
             newTea = document.createElement('label');
             newTea.textContent = tea['name'];
