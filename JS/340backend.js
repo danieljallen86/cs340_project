@@ -1,11 +1,3 @@
-/* The root URL for these routes is "http://flip3.engr.oregonstate.edu:4568/
---I used chars, nations, elements, and teas as the routes
---GET requests SELECTS the whole table, POST allows inserts, DELETE does what you would think, and PUT is for UPDATEs.
---For example, a GET request to "http://flip3.engr.oregonstate.edu:4568/elements will send back the rows in the elements table.
---So far, there are all four options for characters, and only SELECT and INSERT for the others.
---To my knowledge, all the names for the properties in the req.body objects match up with the names they have in your HTML files.
-please let me know if you find any bugs and/or discrepancies. Thanks!*/
-
 var express = require('express');
 var mysql = require('./dbcon.js');
 var CORS = require('cors')
@@ -16,48 +8,43 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(CORS());
 
-// Route handlers for character edits
+// Characters stuff is from line 26-189
+
+// Nations stuff is from line 194-236
+
+// Elements stuff is from line 241-269
+
+// Teas stuff is from line 274-372
+
+// Orders stuff is from line 378-463
+
+// Poor elements_bent has its lone route at 467
+
+// Characters Stuff
 
 // Get characters table
 app.get('/chars',function(req,res,next){
   var context = {};
-  mysql.pool.query('SELECT * FROM characters', function(err, rows, fields){
+  mysql.pool.query('SELECT DISTINCT c.character_id, c.name AS charname, c.bender, n.name AS naysh, CASE WHEN c.avatar = 1 THEN "Avatar" ELSE e.name END AS element FROM characters c LEFT JOIN elements_bent eb USING (character_id) LEFT JOIN elements e USING (element_id) JOIN nations n USING(nation_id) ORDER BY c.name ASC', function(err, rows, fields){
     if(err){
       next(err);
       return;
     }
-    context.results = JSON.stringify(rows);
+    context.results = rows;
     res.send(context);
   });
 });
 
 //Insert character
 app.post('/chars',function(req,res,next){
-  var context = req.body;
-  
-  
-  // Get respective nation_id
-  if (req.body.nation == "air") {
-	req.body.nation = 4;
-  }
-  
-  if (req.body.nation == "earth") {
-	req.body.nation = 2;
-  }
-  
-  if (req.body.nation == "fire") {
-	req.body.nation = 1;
-  }
-  
-  if (req.body.nation == "water") {
-	req.body.nation = 3;
-  }
   
   // Set bits for bender and avatar
   if (req.body.bender == "air" || req.body.bender == "fire" || req.body.bender == "earth" || req.body.bender == "water") {
+    req.body.el_name = req.body.bender;
 	  req.body.bender = 1;
 	  req.body.avatar = 0;
   } else if (req.body.bender == "avatar") {
+    req.body.el_name = ["Fire", "Water", "Air", "Earth"];
 	  req.body.bender = 1;
 	  req.body.avatar = 1;
   } else {
@@ -70,53 +57,83 @@ app.post('/chars',function(req,res,next){
       next(err);
       return;
     }
-    mysql.pool.query("SELECT * FROM characters", function(err, rows, fields) {
-	if(err) {
-	    next(err);
-	    return;
-	}
-	res.json({ rows: rows});
+    // Insert new row into elements_bent if the character is a bender but not the Avatar
+    if (req.body.bender == 1 && req.body.avatar == 0) {
+      mysql.pool.query("INSERT INTO elements bent (`character_id`, `element_id`) VALUES (?, ?)", 
+                      ["SELECT character_id FROM characters WHERE name="+req.body.name, "SELECT element_id FROM elements WHERE LOWER(name)="+req.body.el_name],
+                      function(err, result) {
+                        if (err) {
+                          next(err);
+                          return;
+                        }
+                      });
+                    
+    }
+    // Insert 4 new rows into elements_bent for an Avatar
+    else if (req.body.avatar == 1) {
+      mysql.pool.query("INSERT INTO elements bent (`character_id`, `element_id`) VALUES (?, ?)", 
+                      ["SELECT character_id FROM characters WHERE name="+req.body.name, "SELECT element_id FROM elements WHERE LOWER(name)="+req.body.el_name[0]],
+                      function(err, result) {
+                        if (err) {
+                          next(err);
+                          return;
+                        }
+                        mysql.pool.query("INSERT INTO elements bent (`character_id`, `element_id`) VALUES (?, ?)", 
+                        ["SELECT character_id FROM characters WHERE name="+req.body.name, "SELECT element_id FROM elements WHERE LOWER(name)="+req.body.el_name[1]],
+                        function(err, result) {
+                          if (err) {
+                            next(err);
+                            return;
+                          }
+                          mysql.pool.query("INSERT INTO elements bent (`character_id`, `element_id`) VALUES (?, ?)", 
+                          ["SELECT character_id FROM characters WHERE name="+req.body.name, "SELECT element_id FROM elements WHERE LOWER(name)="+req.body.el_name[2]],
+                          function(err, result) {
+                            if (err) {
+                            next(err);
+                            return;
+                            }
+                            mysql.pool.query("INSERT INTO elements bent (`character_id`, `element_id`) VALUES (?, ?)", 
+                            ["SELECT character_id FROM characters WHERE name="+req.body.name, "SELECT element_id FROM elements WHERE LOWER(name)="+req.body.el_name[3]],
+                            function(err, result) {
+                              if (err) {
+                                next(err);
+                                return;
+                              }
+                            });
+                          });
+                        });
+                      });
+    }
+    mysql.pool.query('SELECT DISTINCT c.character_id, c.name AS charname, c.bender, n.name AS naysh, CASE WHEN c.avatar = 1 THEN "Avatar" ELSE e.name END AS element FROM characters c LEFT JOIN elements_bent eb USING (character_id) LEFT JOIN elements e USING (element_id) JOIN nations n USING(nation_id) ORDER BY c.name ASC', function(err, rows, fields) {
+	    if(err) {
+	      next(err);
+	      return;
+	    }
+	    res.json({ rows: rows});
     });
   });
 });
 
 // Delete character
 app.delete('/chars',function(req,res,next){
-  var context = {};
-  mysql.pool.query("DELETE FROM characters WHERE name=?", [req.body.name], function(err, result){
+  
+  mysql.pool.query("DELETE FROM characters WHERE character_id=?", [req.body.id], function(err, result){
     if(err){
       next(err);
       return;
     }
-    mysql.pool.query("SELECT * FROM characters", function(err, rows, fields) {
-	if(err) {
-	    nex(err);
-	    return;
-	}
-	res.json({rows: rows});
+    mysql.pool.query('SELECT DISTINCT c.character_id, c.name AS charname, c.bender, n.name AS naysh, CASE WHEN c.avatar = 1 THEN "Avatar" ELSE e.name END AS element FROM characters c LEFT JOIN elements_bent eb USING (character_id) LEFT JOIN elements e USING (element_id) JOIN nations n USING(nation_id) ORDER BY c.name ASC', function(err, rows, fields) {
+	    if(err) {
+	      nex(err);
+	      return;
+	    }
+	    res.json({rows: rows});
     });
   });
 });
 
 // Update character
 app.put('/chars',function(req,res,next){
-  
-  // Take value from form and replace with respective nation_id
-  if (req.body.nation == "air") {
-	req.body.nation = 4;
-  }
-  
-  if (req.body.nation == "earth") {
-	req.body.nation = 2;
-  }
-  
-  if (req.body.nation == "fire") {
-	req.body.nation = 1;
-  }
-  
-  if (req.body.nation == "water") {
-	req.body.nation = 3;
-  }
   
   // Set bits for bender and avatar columns
   if (req.body.bender == "air" || req.body.bender == "fire" || req.body.bender == "earth" || req.body.bender == "water") {
@@ -130,24 +147,48 @@ app.put('/chars',function(req,res,next){
 	  req.body.avatar = 0;
   }
   
-  mysql.pool.query("UPDATE characters SET name=?, nation_id=?, bender=?, avatar=? WHERE name=?",
-    [req.body.name, req.body.nation, req.body.bender, req.body.avatar, req.body.name],
+  mysql.pool.query("UPDATE characters SET name=?, nation_id=?, bender=?, avatar=? WHERE character_id=?",
+    [req.body.name, req.body.nation, req.body.bender, req.body.avatar, req.body.id],
     function(err, result){
     if(err){
       next(err);
       return;
     }
-    mysql.pool.query("SELECT * FROM characters", function(err, rows, fields) {
-	if(err) {
-	    next(err);
-	    return;
-	}
-	res.json({rows: rows});
+    mysql.pool.query('SELECT DISTINCT c.character_id, c.name AS charname, c.bender, n.name AS naysh, CASE WHEN c.avatar = 1 THEN "Avatar" ELSE e.name END AS element FROM characters c LEFT JOIN elements_bent eb USING (character_id) LEFT JOIN elements e USING (element_id) JOIN nations n USING(nation_id) ORDER BY c.name ASC', function(err, rows, fields) {
+	    if(err) {
+	      next(err);
+	      return;
+	    }
+	    res.json({rows: rows});
     });
   });
 });
 
-// nations stuff
+// Get a specific customer
+
+app.get('/ind-char', function(req, res, next) {
+
+  var context = {};
+
+  mysql.pool.query('SELECT DISTINCT c.name name, n.name nation, CASE WHEN avatar = 1 THEN \'Avatar (all)\' ELSE e.name END AS element FROM characters c LEFT JOIN nations n USING (nation_id) LEFT JOIN elements_bent eb USING (character_id) LEFT JOIN elements e ON e.element_id = eb.element_id WHERE c.character_id = ?', [req.query.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    context.results = rows;
+
+    mysql.pool.query('SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING (character_id) JOIN teas t USING (tea_id) WHERE character_id = ?', [req.query.id], function (err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.orders = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Nations stuff
 
 // Info for displaying nations table
 app.get('/nations',function(req,res,next){
@@ -157,7 +198,7 @@ app.get('/nations',function(req,res,next){
       next(err);
       return;
     }
-    context.results = JSON.stringify(rows);
+    context.results = rows;
     res.send(context);
   });
 });
@@ -176,22 +217,6 @@ app.post('/nations', function(req,res,next){
 			req.body.ruler = result[0].character_id;
 		} else {
 			req.body.ruler = null;
-		}
-  
-		if (req.body.element == "air") {
-			req.body.element = 4;
-		}
-  
-		if (req.body.element == "earth") {
-			req.body.element = 2;
-		}
-  
-		if (req.body.element == "fire") {
-			req.body.element = 1;
-		}
-  
-		if (req.body.element == "water") {
-		req.body.element = 3;
 		}
   
 		mysql.pool.query("INSERT INTO nations (`name`, `capital`, `ruler_id`, `element_id`) VALUES (?, ?, ?, ?)", [req.body.name, req.body.capital, req.body.ruler, req.body.element], function(err, result){
@@ -220,7 +245,7 @@ app.get('/elements',function(req,res,next){
       next(err);
       return;
     }
-    context.results = JSON.stringify(rows);
+    context.results = rows;
     res.send(context);
   });
 });
@@ -248,12 +273,12 @@ mysql.pool.query("INSERT INTO elements (`name`, `original_bender`) VALUES (?, ?)
 // Get teas table
 app.get('/teas',function(req,res,next){
   var context = {};
-  mysql.pool.query('SELECT * FROM teas', function(err, rows, fields){
+  mysql.pool.query('SELECT * FROM teas ORDER BY name ASC', function(err, rows, fields){
     if(err){
       next(err);
       return;
     }
-    context.results = JSON.stringify(rows);
+    context.results = rows;
     res.send(context);
   });
 });
@@ -269,18 +294,185 @@ app.post('/teas',function(req,res,next){
 	  req.body.caff = 0;
   }
 	
-  mysql.pool.query("INSERT INTO teas (`name`, `caffeinated`, `bender`) VALUES (?, ?)", [req.body.name, req.body.caff], function(err, result){
+  mysql.pool.query("INSERT INTO teas (`name`, `caffeinated`) VALUES (?, ?)", [req.body.name, req.body.caff], function(err, result){
     if(err){
       next(err);
       return;
     }
-    mysql.pool.query("SELECT * FROM teas", function(err, rows, fields) {
+    mysql.pool.query("SELECT * FROM teas ORDER BY name ASC", function(err, rows, fields) {
 	if(err) {
 	    next(err);
 	    return;
 	}
 	res.json({ rows: rows});
     });
+  });
+});
+
+// Update a tea
+
+app.put('/teas', function(req, res, next){
+
+  var context = {};
+
+  if (req.body.caff == "true") {
+	  req.body.caff = 1;
+  } else {
+	  req.body.caff = 0;
+  }
+
+  mysql.pool.query("UPDATE teas SET name=?, caffeinated=? WHERE tea_id=?", [req.body.name, req.body.caff, req.body.id], function(err, rows, fields) {
+    if(err) {
+      next(err);
+      return;
+    }
+    mysql.pool.query("SELECT * FROM teas", function(err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.results = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Get a specific tea
+
+app.get('/ind-tea', function(req, res, next) {
+  var context = {};
+  mysql.pool.query('SELECT * FROM teas WHERE tea_id=?', [req.query.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    context.results = rows;
+    res.send(context);
+  });
+});
+
+// Delete a tea
+
+app.delete('/teas', function(req, res, next) {
+  var context = {};
+  mysql.pool.query("DELETE FROM teas WHERE tea_id=?", [req.body.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    mysql.pool.query("SELECT * FROM teas", function(err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.results = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Orders Stuff
+
+// Get orders table
+
+app.get('/orders', function(req, res, next) {
+    var context = {};
+    mysql.pool.query("SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING(character_id) JOIN teas t USING(tea_id)", function(err, rows, fields) {
+	if(err) {
+	    next(err);
+	    return;
+	}
+	context.results  = rows;
+	res.send(context);
+    });
+});
+
+// Insert an order
+
+app.post("/orders", function(req, res, next){
+  var context = {};
+  mysql.pool.query("INSERT INTO orders (`status`, `order_date`, `character_id`, `tea_id`) VALUES (?, ?, ?, ?)", 
+  [req.body.status, req.body.date, req.body.char, req.body.tea], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    mysql.pool.query("SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING(character_id) JOIN teas t USING(tea_id)", function(err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.results = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Update an order
+
+app.put("/orders", function(req, res, next) {
+  var context = {};
+  mysql.pool.query("UPDATE orders SET status=?, order_date=?, character_id=?, tea_id=? WHERE order_id=?", [req.body.status, req.body.date, req.body.char, req.body.tea, req.body.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    mysql.pool.query("SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING(character_id) JOIN teas t USING(tea_id)", function(err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.results = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Delete an order
+
+app.delete("/orders", function(req, res, next) {
+  var context = {};
+  mysql.pool.query("DELETE FROM orders WHERE order_id=?", [req.body.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    mysql.pool.query("SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING(character_id) JOIN teas t USING(tea_id)", function(err, rows, fields) {
+      if (err) {
+        next(err);
+        return;
+      }
+      context.results = rows;
+      res.send(context);
+    });
+  });
+});
+
+// Get a specific order
+
+app.get('/ind-order', function(req, res, next) {
+  var context = {};
+  mysql.pool.query('SELECT order_id, status, order_date, c.name AS charname, t.name AS tea FROM orders JOIN characters c USING (character_id) JOIN teas t USING (tea_id) WHERE order_id = ?', [req.query.id], function(err, rows, fields) {
+    if (err) {
+      next(err);
+      return;
+    }
+    context.results = rows;
+    res.send(context);
+  });
+});
+
+// Get elements_bent table
+
+app.get('/elements-bent', function(req, res, next) {
+  var context = {};
+  mysql.pool.query("SELECT * FROM elements_bent", function(err, rows, fields) {
+	  if(err) {
+	    next(err);
+	    return;
+	  }
+	  context.result = rows;
+	  res.send(context);
   });
 });
 
