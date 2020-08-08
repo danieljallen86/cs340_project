@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
             updateHeader(pageName);
             updateForm(pageName);
             updateBackButton(pageName);
-            if (pageName.includes('add')){
-                fillFormData();
+            if (pageName.includes('edit')){
+                getFormData();
             }
             document.querySelector('.form_btn').addEventListener('click', insertEdit);
         }
@@ -314,7 +314,7 @@ function viewEntry(id, entity){
 }
 
 function editEntry(id, entity){
-    window.location.href=`edit.html?${entity}_edit?${id}`;
+    window.location.href=`edit.html?${entity}_edit&${id}`;
     event.preventDefault();
 }
 
@@ -362,7 +362,7 @@ function updateForm(pageName){
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label>                    <select name="customer" id="customer"><option value=null default> -- select a customer -- </option></select></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><select id="tea_select"><option value=null default> -- select a tea -- </option></select></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="complete">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label>                    <select name="customer" id="customer"><option value=null default> -- select a customer -- </option></select></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><select id="tea_select"><option value=null default> -- select a tea -- </option></select></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="completed">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
 
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
@@ -410,7 +410,7 @@ function makeOptions(pageName){
     }
 }
 
-async function fillOptions(route, id){
+function fillOptions(route, id){
     const optionField = document.getElementById(id);
     
     let request = new XMLHttpRequest();
@@ -434,9 +434,38 @@ async function fillOptions(route, id){
     request.send(null);
 }
 
-function fillFormData(){
-    // get url parameters (set them to match input id)
-    // put data in fields
+function fillFormData(entity, data){
+    if (entity.includes('customer')){
+        n = 0
+    } else if (entity.includes('tea')){
+        document.getElementById('tea_name').value = data.name;
+        let caff = Array.from(document.querySelectorAll('.caff'));
+        caff[(data.caffeinated + 1) % 2].checked = true; 
+    } else {
+        document.getElementById('date').value = data.order_date.slice(0,10);
+        document.getElementById('order_status').value = data.status.toLowerCase()
+    }
+}
+
+function getFormData(){
+    // get id passed in URL
+    const entity = window.location.search.split('&')[0];
+    const id = window.location.search.split('&')[1];
+
+    // determine which route to use
+    const routeName = entity.includes('customer') ? 'ind-char' : 
+        entity.includes('tea') ? 'ind-tea' : 'ind-order';
+
+    // query database
+    let request = new XMLHttpRequest()
+    request.open('GET', `http://flip3.engr.oregonstate.edu:4568/${routeName}?id=${id}`, true)
+    request.addEventListener('load', ()=>{
+        data = JSON.parse(request.responseText).results[0]
+        console.log(data)
+        fillFormData(entity, data);
+    })
+    request.send(null)
+
 }
 
 function insertEdit(){
