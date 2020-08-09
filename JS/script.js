@@ -362,7 +362,7 @@ function updateForm(pageName){
 
         element: '<div><label for="element_name">Element</label><input type="text" name="name" id="element_name" required></div><div><label for="first_bender">Original Bender</label><input type="text" name="first_bender" id="first_bender"></div><input class="form_btn" type="submit" name="add_element" value="Add Element">',
 
-        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label>                    <select name="customer" id="customer"><option value=null default> -- select a customer -- </option></select></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><select id="tea_select"><option value=null default> -- select a tea -- </option></select></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="new">New</option><option value="in_process">Processing</option><option value="completed">Complete</option><option value="canceled">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
+        order: '<div><label for="date">Order Date</label><input class="date" type="date" name="date" id="date" required></div><div><label for="customer">Customer</label>                    <select name="customer" id="customer"><option value=null default> -- select a customer -- </option></select></div><div class="tea_selection"><label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label><select id="tea_select"><option value=null default> -- select a tea -- </option></select></div><div><label for="order_status">Order Status<br></label><select name="order_status" id="order_status"><option value="NEW">New</option><option value="IN PROGRESS">Processing</option><option value="COMPLETED">Complete</option><option value="CANCELED">Canceled</option></select></div><input class="form_btn" type="submit" name="add_order" value="Add Order">',
 
         status: '<div><label for="status">Status Label</label><input name="status" type="text" id="status"></div><input class="form_btn" type="submit" name="add_status" value="Add Order Status">'
     };
@@ -436,14 +436,20 @@ function fillOptions(route, id){
 
 function fillFormData(entity, data){
     if (entity.includes('customer')){
-        n = 0
+        document.getElementById('name').value = data.name;
+        document.getElementById('select_nation').value = data.nation_id;
+        document.getElementById('bender').value = (data.element === 'Avatar (all)') ? 'avatar' : data.element_id;
+        // document.getElementById('customer').value = data.character_id;
     } else if (entity.includes('tea')){
         document.getElementById('tea_name').value = data.name;
         let caff = Array.from(document.querySelectorAll('.caff'));
         caff[(data.caffeinated + 1) % 2].checked = true; 
     } else {
         document.getElementById('date').value = data.order_date.slice(0,10);
-        document.getElementById('order_status').value = data.status.toLowerCase()
+        document.getElementById('order_status').value = data.status;
+        document.getElementById('tea_select').value = data.tea_id;
+        document.getElementById('customer').value = data.character_id;
+
     }
 }
 
@@ -472,6 +478,7 @@ function insertEdit(){
     let routeMethod; 
     const pageName = window.location.search.slice(1).split('?')[0];
     const routeName = (pageName.split('_')[0] === 'customer') ? 'chars' : `${pageName.split('_')[0]}s`;
+    const id = window.location.search.split('&')[1];
     
     // if add use route
     if (pageName.includes('add')) {
@@ -481,7 +488,7 @@ function insertEdit(){
         routeMethod = 'PUT';
     }
     // package data
-    const queryData = packageData(pageName.split('_') [0]);
+    const queryData = packageData(pageName.split('_') [0], id);
 
     // send query
     let request = new XMLHttpRequest();
@@ -495,33 +502,38 @@ function insertEdit(){
     event.preventDefault();
 }
 
-function packageData(entity) {
+function packageData(entity, id) {
     let queryData = {}
 
     if (entity == 'customer'){
+        queryData.id = id;
         queryData.bender = document.getElementById('bender').value;
         queryData.name = document.getElementById('name').value;
         queryData.nation = document.getElementById('select_nation').value;
     } 
     else if (entity == 'tea'){
+        queryData.id = id;
         queryData.name = document.getElementById('tea_name').value;
         // figure out which radio is selected
         let caff = Array.from(document.querySelectorAll('.caff'));
         queryData.caffeinated = caff[0].checked ? 1 : 0;
     }
     else if (entity == 'order'){
+        queryData.id = id;
         queryData.date = document.getElementById('date').value;
         queryData.char = document.getElementById('customer').value;
         queryData.tea = document.getElementById('tea_select').value;
         queryData.status = document.getElementById('order_status').value;
     }
     else if (entity == 'nation'){
+        queryData.id = id;
         queryData.name = document.getElementById('nation').value;
         queryData.captal = document.getElementById('capital').value;
         queryData.ruler = document.getElementById('ruler').value;
         queryData.element_id = document.getElementById('element').value;
     }
     else if (entity == 'element'){
+        queryData.id = id;
         queryData.name = document.getElementById('element_name').value;
         queryData.original_bender = document.getElementById('first_bender').value;
     }
