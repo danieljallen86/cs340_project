@@ -1,58 +1,52 @@
-const dataKeys = {
-    customer: ['charname', 'naysh', 'bender', 'element'],
-    tea: ['name', 'caffeinated'],
-    order: ['order_id', 'order_date', 'status', 'charname', 'tea'],
-    nation: [`name`, `capital`, `ruler`, `element_id`],
-    element: [`name`, `original_bender`] 
-}
-
-const tableHeaders = {
-    customer: ['Name', 'Nation', 'Bender', 'Element'],
-    tea: ['Name', 'Caffeinated'],
-    order: ['Order Number', 'Date', 'Order Status', 'Customer', 'Tea']
-}
-
+// Style the pages after the landing page (which is static)
 document.addEventListener('DOMContentLoaded', function() {
 
     if (document.title !== 'The Jasmine Dragon'){
         let pageName = window.location.search.slice(1).split('?')[0];
 
+        // if the list pages
         if (pageName.includes('list')){
             updateTitle(pageName);
             updateHeader(pageName);
             populateTable(pageName);
             changeAddBtn(pageName);
 
-            // clear the fields
+            // clear the fields if previously filled
             document.querySelector('#order_search').value = '';
             document.querySelector('#name_search').value = '';
 
+            // hide search bars from teas page
             if (pageName.includes('tea')) {
                 document.getElementById('search_bar').style.display = 'none';
+
+            // hid order number search from customer page
             } else if (pageName.includes('customer')) {
                 document.querySelector('.order_search').style.display = 'none'
             }
+            // add search button listener
             document.querySelector('.search_btn').addEventListener('click', searchTable);
         } 
+        // if the form page to edit or add
         else if (pageName.includes('edit') || pageName.includes('add')){
             updateTitle(pageName);
             updateHeader(pageName);
-            updateForm(pageName);
-            updateBackButton(pageName);
+            updateForm(pageName); // put the appropriate form 
             if (pageName.includes('edit')){
-                getFormData();
+                getFormData(); // fill the data for edit
             }
             document.querySelector('.form_btn').addEventListener('click', insertEdit);
         }
         else if (String(window.location).includes('detail')){
+            // if the detail page
             let entity = window.location.search.slice(1).split('&')[0];
             let id = window.location.search.split('&')[1];
 
+            // hide orders table for orders and tea entities
             if (entity === 'order' || entity === 'tea'){
                 document.querySelector('.cust_orders').style.display = 'none';
             }
-        
             updateDetailPageBtns(entity, id);
+            // display the information for individual entity
             displayDetails(entity, id);
         }
     } 
@@ -70,8 +64,6 @@ function updateTitle(pageName){
     else if (pageName === 'order_edit') document.title = 'Update an Order';  
     else if (pageName === 'nation_add') document.title = 'Add a Nation'
     else if (pageName === 'element_add') document.title = 'Add an Element'
-    else if (pageName === 'nation_edit') document.title = 'Update a Nation Record';
-    else if (pageName === 'element_edit') document.title = 'Update an Element';
 }
 
 function updateHeader(pageName){
@@ -90,24 +82,15 @@ function updateHeader(pageName){
     else if (pageName === 'order_edit') header.textContent = 'Update an Order';  
     else if (pageName === 'nation_add') header.textContent = 'Add a Nation';
     else if (pageName === 'element_add') header.textContent = 'Add an Element';
-    else if (pageName === 'nation_edit') header.textContent = 'Update a Nation Record';
-    else if (pageName === 'element_edit') header.textContent = 'Update an Element';
-}
-
-function updateBackButton(pageName){
-    let backBtn = document.querySelector('.back_btn');
-    if (pageName.includes('status') || pageName.includes('nation') || pageName.includes('element')){
-        backBtn.href = 'javascript:history.back()'
-    } else {
-        backBtn.href = `list.html?${pageName.split('_').slice(0,1)}_list`
-    }
 }
 
 function updateDetailPageBtns(entity, id){
     let editBtn = document.querySelector('.edit_btn');
     let delBtn = document.querySelector('.del_btn');
 
-    editBtn.href = `edit.html?${entity}_edit?${id}`;
+    // put the appropriate link for edit
+    editBtn.href = `edit.html?${entity}_edit&${id}`;
+    // add an event listener for the delete button
     delBtn.addEventListener('click', delEntry);
 }
 
@@ -115,11 +98,14 @@ function displayDetails(entity, id){
     // query database for entity information
     let request = new XMLHttpRequest();
 
+    // query the database
     const entInfo = {id: id};
     request.open("GET", `http://flip3.engr.oregonstate.edu:4568/ind-${entity === 'customer' ? 'char' : entity}?id=${id}`, true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function(){
         myResponse = JSON.parse(request.responseText);
+
+        // update the page with the appropirate information
         if (entity === 'customer') customerDeets(myResponse);
         else if (entity === 'tea') teaDeets(myResponse['results'][0]);
         else if (entity === 'order') orderDeets(myResponse['results'][0]); 
@@ -129,6 +115,7 @@ function displayDetails(entity, id){
 
 function customerDeets(data) {
     let custData = data['results'][0];
+    // create labels for the information
     document.querySelector('.entity_name').textContent = custData.name
     for (let attribute of ['Nation', 'Bender', 'Element']) {
         let newDiv = document.createElement('div');
@@ -139,6 +126,7 @@ function customerDeets(data) {
         newDiv.appendChild(newLabel)
 
         if (attribute === 'Nation') newData.textContent = custData.nation;
+        // translate boolean to human understandable text
         else if (attribute === 'Bender') newData.textContent = custData.bender === 1 ? 'Yes' : 'No';
         else newData.textContent = custData.element;
 
@@ -146,8 +134,9 @@ function customerDeets(data) {
         document.querySelector('.attributes').appendChild(newDiv)
     }
 
+    // add the order table and populate it with the information from the query
     createCustOrderTable(data['orders']);
-    addNewOrderBtn(data.name);   
+    addNewOrderBtn(window.location.search.split('&')[1]);   
 }
 
 function createCustOrderTable(data){
@@ -155,19 +144,20 @@ function createCustOrderTable(data){
     fillData(data, 'order_deets')
 }
 
+// add a new order button for the customer pages
 function addNewOrderBtn(name){
     let orderSection = document.querySelector('.cust_orders');
     let orderBtn = document.createElement('a');
     orderBtn.className = 'add_btn'
-    orderBtn.href = `edit.html?order_add?${name}`
+    orderBtn.href = `edit.html?order_add&${name}`
     let btn = document.createElement('button');
     btn.textContent = 'Add New Order';
     orderBtn.appendChild(btn);
 
     orderSection.parentNode.insertBefore(orderBtn, orderSection.nextSibling)
-
 }
 
+// fill information for tea entity pages
 function teaDeets(data){
     document.title = data.name;
     document.querySelector('.entity_name').textContent = data.name
@@ -180,6 +170,7 @@ function teaDeets(data){
         newDiv.appendChild(newLabel)
 
         if (attribute === 'Tea Name') newData.textContent = data.name;
+        // translate boolean to human understandable text
         else if (attribute === 'Caffeinated') newData.textContent = data.caffeinated === 1 ?
         'Caffeinated' : 'Decaf';
 
@@ -188,6 +179,7 @@ function teaDeets(data){
     }
 }
 
+// display individual order details
 function orderDeets(data){
     document.title = `Order No. ${data.order_id}`;
     document.querySelector('.entity_name').textContent = `Order Number ${data.order_id}`;
@@ -200,6 +192,7 @@ function orderDeets(data){
         newLabel.textContent = attribute;
         newDiv.appendChild(newLabel)
         if (attribute === 'Status') newData.textContent = data.status;
+        // clean the datetime from database
         else if (attribute === 'Date') {
             let dateArr = data.order_date.slice(0,10).split('-');
             newData.textContent = `${Number(dateArr[1])}/${Number(dateArr[2])}/${dateArr[0]}`;
@@ -212,6 +205,7 @@ function orderDeets(data){
     }
 }
 
+// make the add buttons reflect the action being taken on the page
 function changeAddBtn(pageName){
     //select the add button
     let addBtn = document.querySelector('.add_btn');
@@ -220,6 +214,7 @@ function changeAddBtn(pageName){
     addBtn.href = `edit.html?${(pageName.includes('customer')) ? 'customer_add' : (pageName.includes('tea')) ? 'tea_add' : 'order_add'}`;
 }
 
+// make a table on a page with appropriate headers
 function populateTable(pageName){
     makeHeaders(pageName);
 
@@ -233,9 +228,14 @@ function populateTable(pageName){
     request.send(null);
 }
 
+// make headers for entity tables
 function makeHeaders(pageName){
-
-    //make header
+    const tableHeaders = {
+        customer: ['Name', 'Nation', 'Bender', 'Element'],
+        tea: ['Name', 'Caffeinated'],
+        order: ['Order Number', 'Date', 'Order Status', 'Customer', 'Tea']
+    }
+    
     let newRow = document.createElement('tr');
     newRow.className = 'table_head';
 
@@ -249,16 +249,27 @@ function makeHeaders(pageName){
     newCell.textContent = 'View / Edit / Delete';
     newRow.appendChild(newCell)
 
-
     document.querySelector('.results_table').appendChild(newRow);
 }
 
+
+// use data to show entity lists
 function fillData(data, pageName){
+    const dataKeys = {
+        customer: ['charname', 'naysh', 'bender', 'element'],
+        tea: ['name', 'caffeinated'],
+        order: ['order_id', 'order_date', 'status', 'charname', 'tea'],
+        nation: [`name`, `capital`, `ruler`, `element_id`],
+        element: [`name`, `original_bender`] 
+    }
+
+    // a row for each entity in table
     for(let i = 0; i < data.length; ++i){
         let newRow = document.createElement('tr');
         newRow.className = pageName.includes('order') ? `${data[i]['order_id']} ${data[i]['charname']}` : data[i]['charname'];
         newRow.id = data[i]['order_id'] || data[i]['tea_id'] || data[i]['character_id']
         
+        // filter depending on what data is being looked at
         const keys = dataKeys[pageName.split('_')[0]]
         for (let j = 0; j < keys.length; ++j) {
             let newCell = document.createElement('td');
@@ -282,6 +293,7 @@ function fillData(data, pageName){
     }
 }
 
+// make the buttons for the table entities
 function addFormBtns(data){
     tableBtns = [['view_entry','<ion-icon name="eye-outline"></ion-icon>',viewEntry],
                 ['edit_entry','<ion-icon name="pencil-outline"></ion-icon>',editEntry],
@@ -297,6 +309,7 @@ function addFormBtns(data){
         cellBtn.name = button[0];
         cellBtn.id = button[0];
         cellBtn.innerHTML = button[1];
+        // tie ids to the buttons callback functions
         cellBtn.addEventListener('click',function(){
             button[2](data['order_id'] || data['character_id'] || data['tea_id'], 
             data['order_id'] ? 'order' : data['character_id'] ? 'customer' : 'tea')});
@@ -308,34 +321,50 @@ function addFormBtns(data){
     return newCell;
 }
 
+// view entry redirects with a URL parameter
 function viewEntry(id, entity){
     window.location.href=`detail.html?${entity}&${id}`
     event.preventDefault();
 }
 
+// edit entry redirects with a URL parameter
 function editEntry(id, entity){
     window.location.href=`edit.html?${entity}_edit&${id}`;
     event.preventDefault();
 }
 
+// delete uses the passed id and entity
 function delEntry(id, entity){
     // determine route based on entity
-    const routeName = (entity === 'customer') ? 'chars' : `${entity}s`
+    if (entity === undefined){
+        entity = window.location.search.slice(1).split('&')[0];
+        id = window.location.search.slice(1).split('&')[1];
+    }
+    // use the entity to get the appropriate route address
+    const routeName = (entity === 'customer') ? 'chars' : `${entity}s`;
     const delData = {'id': id}
-    // submit query with id
+
     let request = new XMLHttpRequest();
     request.open('DELETE', `http://flip3.engr.oregonstate.edu:4568/${routeName}`,true);
     request.setRequestHeader('Content-Type', 'application/json');
     request.addEventListener('load', function(){
-        document.getElementById(id).style.display = 'none'
+        // if a list page, use DOM manipualtion to remove it from the page w/o refresh
+        if (document.location.search.includes('list')){
+            document.getElementById(id).style.display = 'none'
+        // otherwise it was from a details page and it goes to the 
+        // previous page with current data
+        } else {
+            location.replace(document.referrer)
+        }
     })
     request.send(JSON.stringify(delData));
 
     event.preventDefault();
 }
 
+// uses DOM manipulation to single out rows required - required search function
+// is done on customer page for their orders
 function searchTable(){
-    console.log('searched')
     let rows = document.querySelectorAll('tr');
     let nameSearch = document.getElementById('name_search');
     let orderSearch = document.getElementById('order_search');
@@ -351,6 +380,7 @@ function searchTable(){
     }
 }
 
+// put the appropriate form on the pages
 function updateForm(pageName){
     // object of innerHTML
     const pageForms = {
@@ -373,10 +403,12 @@ function updateForm(pageName){
 
     pageForm.innerHTML = pageForms[formChoice];
 
+    // customer, order, and nation forms have drop downs populated from database
     if (pageName.includes('customer') || pageName.includes('order') || pageName.includes('nation')) {
         makeOptions(pageName);
     }
 
+    // make the button reflect the action of the form
     if (pageName.includes('edit')) {
         // change button name & value
         document.querySelector('.form_btn').value = 
@@ -386,14 +418,9 @@ function updateForm(pageName){
             'update_' + document.querySelector('.form_btn').name.split('_').slice(1)        
     }
 
-    // if adding a new order from the customer details page
-    if (pageName === 'order_add' && window.location.search.slice(1).split('?')[1]) {
-        let custField = document.getElementById('customer');
-        // put customer name in customer field
-        custField.value = window.location.search.slice(1).split('?')[1];
-    }
 }
 
+// fill the needed dropdowns based on the form
 function makeOptions(pageName){
     if (pageName.includes('customer')){
         fillOptions('nations', 'select_nation');
@@ -430,16 +457,24 @@ function fillOptions(route, id){
             newOp.text = 'Avatar (all)';
             optionField.appendChild(newOp);
         }
+
+        // if adding a new order from the customer details page
+        if (window.location.search.includes('add') && window.location.search.split('&')[1] !== null) {
+            let custField = document.getElementById('customer');
+            // put customer name in customer field
+            let char_id = window.location.search.split('&')[1];
+            custField.value = window.location.search.split('&')[1];
+        }
     })
     request.send(null);
 }
 
+// when UPDATE, fill form with exisiting data
 function fillFormData(entity, data){
     if (entity.includes('customer')){
         document.getElementById('name').value = data.name;
         document.getElementById('select_nation').value = data.nation_id;
         document.getElementById('bender').value = (data.element === 'Avatar (all)') ? 'avatar' : data.element_id;
-        // document.getElementById('customer').value = data.character_id;
     } else if (entity.includes('tea')){
         document.getElementById('tea_name').value = data.name;
         let caff = Array.from(document.querySelectorAll('.caff'));
@@ -449,10 +484,10 @@ function fillFormData(entity, data){
         document.getElementById('order_status').value = data.status;
         document.getElementById('tea_select').value = data.tea_id;
         document.getElementById('customer').value = data.character_id;
-
     }
 }
 
+// retreives the exisiting data to pre-populate the form
 function getFormData(){
     // get id passed in URL
     const entity = window.location.search.split('&')[0];
@@ -471,23 +506,22 @@ function getFormData(){
         fillFormData(entity, data);
     })
     request.send(null)
-
 }
 
+// determines route for edit page
 function insertEdit(){
     let routeMethod; 
     const pageName = window.location.search.slice(1).split('?')[0];
     const routeName = (pageName.split('_')[0] === 'customer') ? 'chars' : `${pageName.split('_')[0]}s`;
     const id = window.location.search.split('&')[1];
     
-    // if add use route
+    // determine route Method
     if (pageName.includes('add')) {
         routeMethod = 'POST';
-        
     } else {
         routeMethod = 'PUT';
     }
-    // package data
+    // package data being sent to database
     const queryData = packageData(pageName.split('_') [0], id);
 
     // send query

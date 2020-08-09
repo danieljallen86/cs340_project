@@ -9,7 +9,7 @@
     </head>
     <body class="edit">
         <header>
-            <a class="back_btn">
+            <a class="back_btn" href="javascript:location.replace(document.referrer)">
                 <button>Back</button>            
             </a>
             <a href="index.html">
@@ -19,110 +19,6 @@
         </header>
         <section>
             <form class="master_form">
-                <!-- <div>
-                    <label>Name</label>
-                    <input type="name" name="name" required="">
-                </div>
-                <div>
-                    <label>Nation <a class="silly_add" href="edit.html?nation_add">add a nation</a></label>
-                    <select name="nation">
-                        <option selected="true" value=null default> -- select a nation -- </option>
-                        <option value="air">Air Nomad</option>
-                        <option value="earth">Earth Kingdom</option>
-                        <option value="fire">Fire Nation</option>
-                        <option value="water">Water Tribe</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Bender? <a class="silly_add" href="edit.html?element_add">add an element</a></label>
-                    <select name="bender">
-                        <option value="none" default>No</option>
-                        <option value="air">Air</option>
-                        <option value="earth">Earth</option>
-                        <option value="fire">Fire</option>
-                        <option value="water">Water</option>
-                        <option value="avatar">All (Avatar)</option>
-                    </select>                
-                </div>
-                <input class="form_btn" type="submit" name="Add Customer" value="Add Customer"> -->
-
-                <!-- <div>
-                    <label>Tea Name</label>
-                    <input type="text" name="name" required>
-                </div>
-                <div>
-                    <label>Caffeinated?</label>
-                    <div>
-                        <input type="radio" name="caff" value="true">True
-                        <input type="radio" name="caff" value="true">False                           
-                    </div>
-                </div>
-                <input class="form_btn" type="submit" name="add_tea" value="Add Tea"> -->
-
-                <!-- <div>
-                    <label>Nation</label>
-                    <input type="text" name="name" required>
-                </div> 
-                <div>
-                    <label>Capital</label>
-                    <input type="text" name="capital">
-                </div>
-                <div>
-                    <label>Ruler</label>
-                    <input type="text" name="ruler">
-                </div>
-                <div>
-                    <label>National Element <a class="silly_add" href="edit.html?element_add"><br>add element</a></label></label> 
-                    <select id="bender" name="bender">
-                        <option value="none" default>None</option>
-                        <option value="air">Air</option>
-                        <option value="earth">Earth</option>
-                        <option value="fire">Fire</option>
-                        <option value="water">Water</option>
-                    </select>  
-                </div>
-                <input class="form_btn" type="submit" name="add_nation" value="Add Nation"> -->
-
-                <!-- <div>
-                    <label>Element</label>
-                    <input type="text" name="name" required>
-                </div>
-                <div>
-                    <label>Original Bender</label>
-                    <input type="text" name="original_bender">
-                </div>
-                <input class="form_btn" type="submit" name="add_element" value="Add Element"> -->
-
-                <!-- <div>
-                    <label for="date">Order Date</label>
-                    <input class="date" type="date" name="date" id="date" required>
-                </div>
-                <div>
-                    <label for="customer">Customer</label><br><a class="silly_add" href="edit.html?customer_add">Add a tea</a></label>
-                    <select name="order_status" id="order_status">
-                        <option value=null default> -- select a customer -- </option>
-                    </select>
-                </div>
-                <div class="tea_selection">
-                    <label>Tea<br><a class="silly_add" href="edit.html?tea_add">Add a tea</a></label>
-                    <div id='tea_select'>
-                        <label>Green <input type="checkbox" name="green"></label>
-                        <label>Black <input type="checkbox" name="black"></label>
-                        <label>Herbal <input type="checkbox" name="herbal"></label>
-                    </div>
-                </div>
-                <div>
-                    <label for="order_status">Order Status<br></label>
-                    <select name="order_status" id="order_status">
-                        <option value="new">New</option>
-                        <option value="in_process">Processing</option>
-                        <option value="complete">Complete</option>
-                        <option value="canceled">Canceled</option>
-                    </select>
-                </div>
-                <input class="form_btn" type="submit" name="add_order" value="Add Order"> -->
-
-                <!-- <div>
                     <label for="status">Status Label</label>
                     <input name="status" type="text" id="status">
                 </div>
